@@ -19,8 +19,8 @@ class Player:
             self.x += self.velocity
 
     def player_rect(self):
-        self.rect = pygame.Rect(self.x, self.y_position, 20, 50)
+        self.rect = pygame.Rect(self.x_position, self.y_position, 20, 50)
 
     def player_drawing(self, screen):
         player_image = pygame.image.load(self.photo)
-        screen.blit(player_image, (self.x, self.y_position))
+        screen.blit(player_image, (self.x_position, self.y_position))
