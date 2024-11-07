@@ -1,6 +1,7 @@
 
 import pygame as pg
 import os
+from map import Platform
 
 GRAVITY = 0.5
 class Entity(pg.sprite.Sprite):
@@ -48,22 +49,24 @@ class Player(Entity):
         self.vel = vel
         self.direction = 1
         self.flip = False
-        self.animation_speed = 0.2
+        self.animation_speed = 0.1
         self.current_time = 0
         self.is_moving = False
         self.is_shooting = False
         self.is_crouched = False
         self.is_jumping = False
-        self.vel_y = 2
+        self.gravity_y = 0.75
+        self.vel_y = 0
         self.jump_count = 0
         self.jump_count_max = 1
+        self.jump_pressed = False
      
     
     def movement(self):
         """Módulo responsável pela movimentação do jogador"""
         keys = pg.key.get_pressed()
 
-        if keys[pg.K_s]:  # Agachar
+        if keys[pg.K_s]:  
             self.set_state('crouch')
             self.is_crouched = True
 
@@ -82,11 +85,36 @@ class Player(Entity):
         else:
                     self.set_state('idle')
 
-        
-        if keys[pg.K_SPACE]:
+        if keys[pg.K_SPACE] and not self.jump_pressed:
+             self._jump()
+             self.jump_pressed = True
+
+        if not keys[pg.K_SPACE]:
+            self.jump_pressed = False
+
+    def _jump(self):
+        "Metodo responsavel pelo movimento de pulo"
+        if self.jump_count < self.jump_count_max:
             self.is_jumping = True
             self.set_state('jump')
-            self.rect.y -= self.vel_y
+            self.vel_y = -11
+            self.jump_count += 1
+
+    def on_collision(self, other):
+        """Metodo responsavel pela colisao do jogador com outros objetos"""
+        # TODO: Mudar comportamento das colisoes laterais
+        if isinstance(other, Platform):
+            # colisao inferior (superior da plataforma)
+            if self.vel_y > 0:  
+                self.rect.bottom = other.rect.top  
+                self.vel_y = 0  
+                self.jump_count = 0 
+
+        # colisao superior (inferior da plataforma)
+            if self.vel_y < 0:  
+                if self.rect.top < other.rect.bottom and self.rect.top - self.vel_y >= other.rect.bottom:
+                    self.rect.top = other.rect.bottom  
+                    self.vel_y = 0   
 
     
     def set_state(self, new_state: str):
@@ -110,8 +138,10 @@ class Player(Entity):
             self.image = self.images['idle'][self.index]  
 
     def update(self):
-        """Método responsável por atualizar a animação."""
+        """Metodo responsavel por atualizar a animação."""
         self.animate()
+        self.vel_y += self.gravity_y
+        self.rect.y += self.vel_y
 
     def draw(self, screen):
         """Módulo responsável por desenhar as sprites do jogador"""
