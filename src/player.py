@@ -3,7 +3,8 @@ import pygame as pg
 import os
 from map import Platform
 
-GRAVITY = 0.5
+PX_SCALE = 1
+
 class Entity(pg.sprite.Sprite):
     """
     Classe que representa uma Entidade. Qualquer coisa que se mexe e possui sprites.
@@ -22,9 +23,21 @@ class Entity(pg.sprite.Sprite):
         self.index = 0
         # carregar imagens de cada estado        
         self.images = {}
-        for state, folder in images_folders.items():
-            self.images[state] = [pg.image.load(os.path.join(folder, img)) for img in os.listdir(folder) if img.endswith(".png")]
-        
+
+        # TODO: passar a logica do load da imagem para uma funcao propria load_image em utils.py
+
+        for state, folder in images_folders.items():      
+            self.images[state] = []
+            for img_name in os.listdir(folder):
+                if img_name.endswith(".png"):
+                    img_path = os.path.join(folder, img_name)
+                    image = pg.image.load(img_path).convert_alpha()
+                    
+                    self.width, self.height = image.get_width(), image.get_height()
+                    scaled_image = pg.transform.scale(image, (int(self.width * PX_SCALE), int(self.height * PX_SCALE)))
+
+                    self.images[state].append(scaled_image)
+
         self.image = self.images[self.state][self.index]
         self.rect = self.image.get_rect(center=(x, y))
 
@@ -46,7 +59,8 @@ class Player(Entity):
     """
     def __init__(self, images_folders: dict, x: int, y: int, vel: int):
         super().__init__(images_folders, x, y)
-        self.vel = vel
+        self.vel_x = vel
+        self.dx = 0
         self.direction = 1
         self.flip = False
         self.animation_speed = 0.1
@@ -66,24 +80,31 @@ class Player(Entity):
         """Módulo responsável pela movimentação do jogador"""
         keys = pg.key.get_pressed()
 
+        self.dx = 0
+
+        #TODO: impedir que 'a' e 'd' sejam pressionadas enquanto agachado e 
+        # dar um delay para reconhece-las (personagem levantar)
+
         if keys[pg.K_s]:  
             self.set_state('crouch')
             self.is_crouched = True
 
         elif keys[pg.K_a]:  
-                    self.rect.x -= self.vel
-                    self.direction = -1
-                    self.flip = True
-                    self.is_moving = True
-                    self.set_state('run')  
+            self.dx  -= self.vel_x
+            self.direction = -1
+            self.flip = True
+            self.is_moving = True
+            self.set_state('run')  
         elif keys[pg.K_d]:  
-                    self.rect.x += self.vel
-                    self.direction = 1
-                    self.flip = False
-                    self.is_moving = True
-                    self.set_state('run')  
+            self.dx += self.vel_x
+            self.direction = 1
+            self.flip = False
+            self.is_moving = True
+            self.set_state('run') 
+
         else:
-                    self.set_state('idle')
+            self.set_state('idle')
+            self.is_crouched = False
 
         if keys[pg.K_SPACE] and not self.jump_pressed:
              self._jump()
@@ -102,21 +123,37 @@ class Player(Entity):
 
     def on_collision(self, other):
         """Metodo responsavel pela colisao do jogador com outros objetos"""
-        # TODO: Mudar comportamento das colisoes laterais
         if isinstance(other, Platform):
-            # colisao inferior (superior da plataforma)
-            if self.vel_y > 0:  
-                self.rect.bottom = other.rect.top  
-                self.vel_y = 0  
-                self.jump_count = 0 
+            # colisão inferior (superior da plataforma)
+            if self.vel_y > 0:
+                self.rect.bottom = other.rect.top
+                self.vel_y = 0
+                self.jump_count = 0  
+                
+                # colisao de agachamento
+                if self.is_crouched:
+                    self.rect.top += 6
+            
+            # colisão superior (inferior da plataforma)
+            elif self.vel_y < 0:
+                self.rect.top = other.rect.bottom
+                self.vel_y = 0
 
-        # colisao superior (inferior da plataforma)
-            if self.vel_y < 0:  
-                if self.rect.top < other.rect.bottom and self.rect.top - self.vel_y >= other.rect.bottom:
-                    self.rect.top = other.rect.bottom  
-                    self.vel_y = 0   
+            #TODO: impedir que o player suba na plataforma ao colidir na direita
 
-    
+            # colisão pela direita
+            if self.dx > 0 and self.rect.right > other.rect.left and self.rect.left < other.rect.left:
+                self.rect.right = other.rect.left 
+                self.dx = 0
+
+            #TODO: implementar colisao pela esquerda
+
+            # colisão pela esquerda
+            # elif self.dx < 0:
+            #     if self.rect.left < other.rect.right and self.rect.right > other.rect.right:
+            #         self.rect.left = other.rect.right
+            #         self.dx = 0
+            
     def set_state(self, new_state: str):
         """Muda o estado atual da animação (por exemplo, de 'run' para 'idle')."""
         if self.state != new_state:
@@ -142,9 +179,11 @@ class Player(Entity):
         self.animate()
         self.vel_y += self.gravity_y
         self.rect.y += self.vel_y
+        self.rect.x += self.dx
+
 
     def draw(self, screen):
         """Módulo responsável por desenhar as sprites do jogador"""
         screen.blit(pg.transform.flip(self.image, self.flip, False), self.rect)
-        self.movement()
         self.update()
+        self.movement()
