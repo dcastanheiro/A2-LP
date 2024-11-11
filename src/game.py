@@ -3,6 +3,7 @@
 import pygame as pg
 from player import Player
 from map import Platform
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_HEIGHT, TILE_WIDTH
 
 player_all_images_folders = {
             "idle":             "assets/Player/idle_right",
@@ -24,7 +25,6 @@ player_all_images_folders = {
 }
 
 # mapa: Cada "#" representa um bloco, e "." é um espaço vazio
-# 30 linhas e ? colunas
 map_layout = [
     "...........................................................................",
     "...........................................................................",
@@ -51,10 +51,16 @@ map_layout = [
     "...........................................................................",
     "...........................................................................",
     "...........................................................................",
-    ".............#####..###....................................................",
-    "..............#............................................................",
-    ".......#####...............................................................",
-    ".....###....................#..........#####...............................",
+    "...........................................##..............................",
+    "...........................................................................",
+    "...........................................................................",
+    "...........................................................................",
+    "............................................###............................",
+    ".......................#...................................................",
+    ".............#####..####...............###.................................",
+    "...............#..........................................................",
+    ".......#####...................................##..........................",
+    ".....#######.............####..........#####..#######......................",
     "####################################..#####################################"
 ]
 
@@ -67,18 +73,17 @@ class Game:
         pg.init()
 
         # setando a tela
-        self.width = 1280
-        self.height = 720
+        self.width = SCREEN_WIDTH
+        self.height = SCREEN_HEIGHT
         self.screen = pg.display.set_mode((self.width, self.height))
         pg.display.set_caption('Run n Gun')
 
         # inicializando objetos
-        self.player = Player(player_all_images_folders, x=300, y=300, vel=1)
+        self.player = Player(player_all_images_folders, x=60, y=100, vel=1)
         self.platforms = Platform.create_platform(map_layout=map_layout)
 
         self.clock = None
         self.run = False
-
 
     def running(self):
         """Método que inicializa o jogo"""
@@ -115,9 +120,17 @@ class Game:
                 self.player.on_collision(platform)
                 platform.on_collision(self.player)
 
+    def draw_grid(self):
+        """Metodo para desenhar o grid na tela."""
+        for x in range(0, self.width, TILE_WIDTH):
+            pg.draw.line(self.screen, (50, 50, 50), (x, 0), (x, self.height))  
+        for y in range(0, self.height, TILE_HEIGHT):
+            pg.draw.line(self.screen, (50, 50, 50), (0, y), (self.width, y))
+
     def draw(self):
         """Metodo responsavel por desenhar os objetos na tela"""
         self.screen.fill((0,0,0))
+        self.draw_grid()
         for platform in self.platforms:
             platform.draw(self.screen)  
         self.player.draw(self.screen)

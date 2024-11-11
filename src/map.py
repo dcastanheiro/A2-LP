@@ -1,11 +1,6 @@
 """Modulo dedicado a criacao do mapa"""
 import pygame as pg
-
-# TODO: criar um settings.py com as configuracoes principais
-
-#1 vem de PX_SCALE
-TILE_WIDTH = 20 * 1 
-TILE_HEIGHT = 20 * 1
+from settings import TILE_WIDTH, TILE_HEIGHT
 
 class Platform(pg.sprite.Sprite):
     """
