@@ -1,6 +1,7 @@
 """Modulo dedicado a criacao do mapa"""
 import pygame as pg
-from settings import TILE_WIDTH, TILE_HEIGHT
+from settings import TILE_SIZE
+from utils import load_tile
 
 class Platform(pg.sprite.Sprite):
     """
@@ -19,14 +20,13 @@ class Platform(pg.sprite.Sprite):
         Altura da plataforma
     """
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, img_path):
         super().__init__()
-        self.image = pg.Surface((width, height))
-        self.image.fill((0, 255, 0))  # cor verde para a plataforma
+        self.image = load_tile(img_path)
         self.rect = self.image.get_rect(topleft=(x, y))
 
     @classmethod
-    def create_platform(cls, map_layout: list, tile_width=TILE_WIDTH, tile_height=TILE_WIDTH):
+    def create_platform(cls, map_layout: list, img_path, tile_width=TILE_SIZE, tile_height=TILE_SIZE) -> list:
         """
         Metodo de criacao da plataforma
 
@@ -38,6 +38,11 @@ class Platform(pg.sprite.Sprite):
                     int representando o largura da tile
         tile_height:
                     int representando a altura da tile
+        
+        Returns
+        -------
+        platforms:
+                    lista representando as plataformas do mapa
         """
         platforms = [] 
         for row_index, row in enumerate(map_layout):
@@ -45,7 +50,7 @@ class Platform(pg.sprite.Sprite):
                 if tile == "#":
                     x = col_index * tile_width
                     y = row_index * tile_height
-                    platform = cls(x, y, tile_width, tile_height)
+                    platform = cls(x, y, tile_width, tile_height, img_path)
                     platforms.append(platform)
 
         return platforms  

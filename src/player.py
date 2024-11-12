@@ -61,8 +61,8 @@ class Player(Entity):
         self.is_moving = False
         self.is_shooting = False
         self.is_crouched = False
-        self.is_jumping = False
-        self.__gravity_y = 0.75
+        self.gravity_up = 0.5  # gravidade na ascendencia do pulo
+        self.gravity_down = 0.3 # gravidade na descendencia do pulo
         self.vel_y = 0
         self.jump_count = 0
         self.jump_count_max = 1
@@ -100,48 +100,54 @@ class Player(Entity):
              self._jump()
              self.jump_pressed = True
 
+        if keys[pg.K_w] and self.jump_pressed:
+            self.set_state('jump_up')
+
+        if keys[pg.K_s] and self.jump_pressed:
+            self.set_state('jump_down')
+
         if not keys[pg.K_SPACE]:
             self.jump_pressed = False
 
     def _jump(self):
         "Metodo responsavel pelo movimento de pulo"
         if self.jump_count < self.jump_count_max:
-            self.is_jumping = True
             self.set_state('jump')
-            self.vel_y = -11
+            self.vel_y = -10
             self.jump_count += 1
 
     def on_collision(self, other):
         """Metodo responsavel pela colisao do jogador com outros objetos"""
         if isinstance(other, Platform):
            # tolerancia para diferenciar colisoes horizontais e verticais
-            self._tolerance = 18 
+            self._tolerance = 20
 
-            # colisao inferior (superior da plataforma)
-            if self.vel_y > 0 and abs(self.rect.bottom - other.rect.top) <= self._tolerance:
-                self.rect.bottom = other.rect.top
-                self.vel_y = 0
-                self.jump_count = 0  
-            
-                if self.is_crouched:
-                    self.rect.top += 6
+            if pg.sprite.collide_rect(self, other):
+                # colisao inferior (superior da plataforma)
+                if self.vel_y > 0 and abs(self.rect.bottom - other.rect.top) <= self._tolerance:
+                    self.rect.bottom = other.rect.top
+                    self.vel_y = 0
+                    self.jump_count = 0  
+                
+                    if self.is_crouched:
+                        self.rect.top += 6
 
-            # colisao superior (inferior da plataforma)
-            elif self.vel_y < 0 and abs(self.rect.top - other.rect.bottom) <= self._tolerance:
-                self.rect.top = other.rect.bottom
-                self.vel_y = 0
+                # colisao superior (inferior da plataforma)
+                elif self.vel_y < 0 and abs(self.rect.top - other.rect.bottom) <= self._tolerance:
+                    self.rect.top = other.rect.bottom
+                    self.vel_y = 0
 
-            # colisao lateral pela direita
-            if self.dx > 0 and abs(self.rect.right - other.rect.left) <= self._tolerance:
-                if self.rect.bottom > other.rect.top + self._tolerance and self.rect.top < other.rect.bottom - self._tolerance:
-                    self.rect.right = other.rect.left
-                    self.dx = 0
+                # colisao lateral pela direita
+                if self.dx > 0 and self.rect.right > other.rect.left and self.rect.left < other.rect.left:
+                    if self.rect.bottom > other.rect.top + self._tolerance and self.rect.top < other.rect.bottom - self._tolerance:
+                        self.rect.right = other.rect.left
+                        self.dx = 0
 
-            # colisao lateral pela esquerda
-            elif self.dx < 0 and abs(self.rect.left - other.rect.right) <= self._tolerance:
-                if self.rect.bottom > other.rect.top + self._tolerance and self.rect.top < other.rect.bottom - self._tolerance:
-                    self.rect.left = other.rect.right
-                    self.dx = 0
+                # colisao lateral pela esquerda
+                elif self.dx < 0 and self.rect.left < other.rect.right and self.rect.right > other.rect.right:
+                    if self.rect.bottom > other.rect.top + self._tolerance and self.rect.top < other.rect.bottom - self._tolerance:
+                        self.rect.left = other.rect.right
+                        self.dx = 0
                 
     def set_state(self, new_state: str):
         """Muda o estado atual da animação (por exemplo, de 'run' para 'idle')."""
@@ -166,7 +172,14 @@ class Player(Entity):
     def update(self):
         """Metodo responsavel por atualizar a animação."""
         self.animate()
-        self.vel_y += self.__gravity_y
+
+        if self.vel_y < 0:  # ascendente
+            self.vel_y += self.gravity_up
+        elif self.vel_y > 0:  # descendente
+            self.vel_y += self.gravity_down
+        else:  
+            self.vel_y += (self.gravity_up + self.gravity_down) / 2
+
         self.rect.y += self.vel_y
         self.rect.x += self.dx
 
