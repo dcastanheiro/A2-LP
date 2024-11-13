@@ -61,8 +61,9 @@ class Player(Entity):
         self.is_moving = False
         self.is_shooting = False
         self.is_crouched = False
-        self.gravity_up = 0.5  # gravidade na ascendencia do pulo
-        self.gravity_down = 0.3 # gravidade na descendencia do pulo
+        self.is_in_air = False
+        self.gravity_up = 0.1  # gravidade na ascendencia do pulo
+        self.gravity_down = 0.1 # gravidade na descendencia do pulo
         self.vel_y = 0
         self.jump_count = 0
         self.jump_count_max = 1
@@ -75,11 +76,15 @@ class Player(Entity):
 
         self.dx = 0
 
-        if keys[pg.K_s]:  
+        # agachamento
+        if keys[pg.K_s] and self.is_in_air == False:  
             self.set_state('crouch')
             self.is_crouched = True
+        else:
+            self.is_crouched = False
         
-        elif keys[pg.K_a] and self.is_crouched == False:  
+        # movimentacao lateral
+        if keys[pg.K_a] and self.is_crouched == False:  
             self.dx  -= self.vel_x
             self.direction = -1
             self.flip = True
@@ -92,22 +97,53 @@ class Player(Entity):
             self.is_moving = True
             self.set_state('run') 
 
-        else:
-            self.set_state('idle')
-            self.is_crouched = False
-
-        if keys[pg.K_SPACE] and not self.jump_pressed:
+        # posicao padrao
+        elif not self.is_crouched:
+            if not self.is_in_air:
+                self.set_state('idle')
+            
+        # pulo
+        if keys[pg.K_SPACE] and not self.jump_pressed and not self.is_in_air:
              self._jump()
              self.jump_pressed = True
 
-        if keys[pg.K_w] and self.jump_pressed:
-            self.set_state('jump_up')
-
-        if keys[pg.K_s] and self.jump_pressed:
-            self.set_state('jump_down')
+        # olhar para cima e para baixo durante o pulo
+        if self.is_in_air:
+            if keys[pg.K_w]:
+                self.set_state('jump_up')
+            elif keys[pg.K_s]:
+                self.set_state('jump_down')
 
         if not keys[pg.K_SPACE]:
             self.jump_pressed = False
+
+    def shoot(self):
+        """Metodo responsavel pelas movimentacoes e animacoes de tiro do jogador"""
+        keys = pg.key.get_pressed()
+        if self.is_in_air:
+            if keys[pg.K_w]:
+                self.set_state('shoot_jump_up')
+            elif keys[pg.K_s]:
+                self.set_state('shoot_jump_down')
+            else:
+                self.set_state('shoot_jump')
+        elif self.is_crouched:
+            self.set_state('shoot_shift')
+        elif self.is_moving:
+            if keys[pg.K_w]: 
+                self.set_state('shoot_run_up')
+            else:
+                self.set_state('shoot_run')
+        else:
+            if keys[pg.K_w]:  
+                self.set_state('shoot_up')
+            else:
+                self.set_state('shoot')
+
+        self.is_shooting = True
+
+
+
 
     def _jump(self):
         "Metodo responsavel pelo movimento de pulo"
@@ -115,9 +151,10 @@ class Player(Entity):
             self.set_state('jump')
             self.vel_y = -10
             self.jump_count += 1
+            self.is_in_air = True
 
     def on_collision(self, other):
-        """Metodo responsavel pela colisao do jogador com outros objetos"""
+        """Metodo responsavel pela colisao do jogador com obstaculos"""
         if isinstance(other, Platform):
            # tolerancia para diferenciar colisoes horizontais e verticais
             self._tolerance = 20
@@ -127,7 +164,8 @@ class Player(Entity):
                 if self.vel_y > 0 and abs(self.rect.bottom - other.rect.top) <= self._tolerance:
                     self.rect.bottom = other.rect.top
                     self.vel_y = 0
-                    self.jump_count = 0  
+                    self.jump_count = 0 
+                    self.is_in_air = False 
                 
                     if self.is_crouched:
                         self.rect.top += 6
