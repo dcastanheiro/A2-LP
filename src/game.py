@@ -99,16 +99,15 @@ class Game:
     
     def on_event(self):
         """Metodo responsavel por controlar os eventos do jogo"""
-        for event in pg.event.get():
-            # botao para atirar
-            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1: 
-                if not self.player.is_shooting: 
-                    self.player.shoot()
-            elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
-                self.player.is_shooting = False
-            # quit game
+        events = pg.event.get()
+        for event in events:
             if event.type == pg.QUIT:
               self.run = False
+            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1: 
+                self.player.is_shooting = True
+            elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
+                self.player.is_shooting = False   
+            
 
     def update(self):
         """Metodo para atualizar o jogo"""

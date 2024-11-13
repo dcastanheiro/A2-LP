@@ -62,8 +62,8 @@ class Player(Entity):
         self.is_shooting = False
         self.is_crouched = False
         self.is_in_air = False
-        self.gravity_up = 0.1  # gravidade na ascendencia do pulo
-        self.gravity_down = 0.1 # gravidade na descendencia do pulo
+        self.gravity_up = 0.4  # gravidade na ascendencia do pulo
+        self.gravity_down = 0.3 # gravidade na descendencia do pulo
         self.vel_y = 0
         self.jump_count = 0
         self.jump_count_max = 1
@@ -76,74 +76,72 @@ class Player(Entity):
 
         self.dx = 0
 
-        # agachamento
-        if keys[pg.K_s] and self.is_in_air == False:  
+        # agachar
+        if keys[pg.K_s] and not self.is_in_air:
             self.set_state('crouch')
             self.is_crouched = True
         else:
             self.is_crouched = False
-        
-        # movimentacao lateral
-        if keys[pg.K_a] and self.is_crouched == False:  
-            self.dx  -= self.vel_x
+
+        # movimentaçao lateral
+        if keys[pg.K_a] and not self.is_crouched:
+            self.dx -= self.vel_x
             self.direction = -1
             self.flip = True
             self.is_moving = True
             self.set_state('run')  
-        elif keys[pg.K_d] and self.is_crouched == False:  
+        elif keys[pg.K_d] and not self.is_crouched:
             self.dx += self.vel_x
             self.direction = 1
             self.flip = False
             self.is_moving = True
             self.set_state('run') 
 
-        # posicao padrao
-        elif not self.is_crouched:
+        # se nao estiver se movendo e nao estiver agachado
+        elif not self.is_crouched and not self.is_moving:
             if not self.is_in_air:
                 self.set_state('idle')
-            
-        # pulo
-        if keys[pg.K_SPACE] and not self.jump_pressed and not self.is_in_air:
-             self._jump()
-             self.jump_pressed = True
 
-        # olhar para cima e para baixo durante o pulo
+        # pular
+        if keys[pg.K_SPACE] and not self.jump_pressed and not self.is_in_air:
+            self._jump()
+            self.jump_pressed = True
+
+        # olhar para cima ou para baixo durante o pulo
         if self.is_in_air:
             if keys[pg.K_w]:
                 self.set_state('jump_up')
             elif keys[pg.K_s]:
                 self.set_state('jump_down')
 
+        # resetar o pulo
         if not keys[pg.K_SPACE]:
             self.jump_pressed = False
 
     def shoot(self):
         """Metodo responsavel pelas movimentacoes e animacoes de tiro do jogador"""
         keys = pg.key.get_pressed()
+
         if self.is_in_air:
             if keys[pg.K_w]:
-                self.set_state('shoot_jump_up')
+                self.set_state('shoot_jump_up')  # tiro enquanto olha para cima no ar
             elif keys[pg.K_s]:
-                self.set_state('shoot_jump_down')
+                self.set_state('shoot_jump_down')  # tiro enquanto olha para baixo no ar
             else:
-                self.set_state('shoot_jump')
+                self.set_state('shoot_jump')  # tiro padrao no ar
         elif self.is_crouched:
-            self.set_state('shoot_shift')
+            self.set_state('shoot_shift')  # tiro agachado
         elif self.is_moving:
-            if keys[pg.K_w]: 
-                self.set_state('shoot_run_up')
+            if keys[pg.K_w]:
+                self.set_state('shoot_run_up')  # tiro correndo para cima
             else:
-                self.set_state('shoot_run')
+                self.set_state('shoot_run')  # tiro correndo normal
         else:
             if keys[pg.K_w]:  
-                self.set_state('shoot_up')
-            else:
-                self.set_state('shoot')
-
-        self.is_shooting = True
-
-
-
+                self.set_state('shoot_up')  # tiro para cima enquanto parado
+            elif self.is_shooting:  
+                self.set_state('shoot') # tiro parado normal
+            
 
     def _jump(self):
         "Metodo responsavel pelo movimento de pulo"
@@ -192,20 +190,16 @@ class Player(Entity):
         if self.state != new_state:
             self.state = new_state
             self.index = 0
-
             self.image = self.images[self.state][self.index]
             self.current_time = 0
 
     def animate(self):
         """Atualiza a animação, trocando o frame atual baseado na velocidade."""
-        if self.is_moving:
-            self.current_time += self.animation_speed
-            if self.current_time >= 1:
-                self.index = (self.index + 1) % len(self.images[self.state])
-                self.image = self.images[self.state][self.index]
-                self.current_time = 0
-        else:
-            self.image = self.images['idle'][self.index]  
+        self.current_time += self.animation_speed
+        if self.current_time >= 1:
+            self.index = (self.index + 1) % len(self.images[self.state])
+            self.image = self.images[self.state][self.index]
+            self.current_time = 0
 
     def update(self):
         """Metodo responsavel por atualizar a animação."""
@@ -218,8 +212,12 @@ class Player(Entity):
         else:  
             self.vel_y += (self.gravity_up + self.gravity_down) / 2
 
+        # atualiza o movimento
         self.rect.y += self.vel_y
         self.rect.x += self.dx
+
+        if self.is_shooting is True:
+            self.shoot()
 
     def draw(self, screen):
         """Módulo responsável por desenhar as sprites do jogador"""
