@@ -4,6 +4,7 @@ import pygame as pg
 from player import Player
 from map import Platform
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE
+from bullet import Bullet
 
 player_all_images_folders = {
             "idle":             "assets/Player/idle_right",
@@ -82,6 +83,13 @@ class Game:
         self.player = Player(player_all_images_folders, x=60, y=120, vel=1)
         self.platforms = Platform.create_platform(map_layout=map_layout, img_path ="assets/Assets_area_2/tileset/floor_1.png")
 
+        # inicializando grupo de sprites
+        self.bullet_group = pg.sprite.Group()
+        self.platform_group = pg.sprite.Group()
+
+        for platform in self.platforms:
+            self.platform_group.add(platform)
+
         self.clock = None
         self.run = False
 
@@ -103,21 +111,30 @@ class Game:
         for event in events:
             if event.type == pg.QUIT:
               self.run = False
-            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1: 
-                self.player.is_shooting = True
-            elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
-                self.player.is_shooting = False   
+            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                self.player.shoot_bullets(self.bullet_group)
+            # elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            #     self.player.is_shooting = True
+            # elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
+            #     self.player.is_shooting = False   
             
 
     def update(self):
         """Metodo para atualizar o jogo"""
         self.player.update()
+        self.bullet_group.update()
+        self.check_bullet_collisions()
         for platform in self.platforms:
             platform.update()
         self.check_collision()
         pg.display.update()
-        
 
+    def check_bullet_collisions(self):
+        """Metodo responsavel pela colisao das balas com outros objetos"""
+        for bullet in self.bullet_group:
+            if pg.sprite.spritecollideany(bullet, self.platform_group):
+                bullet.kill()  
+        
     def check_collision(self):
         """Metodo responsavel pela colisao entre objetos do mapa"""
         for platform in self.platforms:
@@ -139,5 +156,6 @@ class Game:
         for platform in self.platforms:
             platform.draw(self.screen)  
         self.player.draw(self.screen)
+        self.bullet_group.draw(self.screen)
         pg.display.flip()
 

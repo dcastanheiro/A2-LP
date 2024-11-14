@@ -2,6 +2,8 @@
 
 import pygame as pg
 import os
+import time
+from bullet import Bullet
 from map import Platform
 from settings import PX_SCALE
 from utils import load_image
@@ -43,18 +45,19 @@ class Player(Entity):
     ----------
     images_folders: dict
         Dicionário de animações com estados e imagens correspondentes
-    x:
+    x: int
         Posição do eixo x inicial do jogador
-    y:
+    y: int
         Posição do eixo y inicial do jogador
-    vel:
+    vel: int
         Velocidade de movimento do jogador
     """
     def __init__(self, images_folders: dict, x: int, y: int, vel: int):
         super().__init__(images_folders, x, y)
         self.vel_x = vel
         self.dx = 0
-        self.direction = 1
+        self.direction = (1,0) # quaisquer das 4 direcoes
+        self.facing = (1, 0) # direcoes laterais
         self.flip = False
         self.animation_speed = 0.1
         self.current_time = 0
@@ -63,11 +66,13 @@ class Player(Entity):
         self.is_crouched = False
         self.is_in_air = False
         self.gravity_up = 0.4  # gravidade na ascendencia do pulo
-        self.gravity_down = 0.3 # gravidade na descendencia do pulo
+        self.gravity_down = 0.1 # gravidade na descendencia do pulo
         self.vel_y = 0
         self.jump_count = 0
         self.jump_count_max = 1
         self.jump_pressed = False
+        self.bullet_cooldown = 0.05  
+        self.last_shot_time = time.time()
      
     
     def movement(self):
@@ -76,7 +81,7 @@ class Player(Entity):
 
         self.dx = 0
 
-        # agachar
+        # agacha
         if keys[pg.K_s] and not self.is_in_air:
             self.set_state('crouch')
             self.is_crouched = True
@@ -86,21 +91,22 @@ class Player(Entity):
         # movimentaçao lateral
         if keys[pg.K_a] and not self.is_crouched:
             self.dx -= self.vel_x
-            self.direction = -1
+            self.direction = (-1,0)
+            self.facing = (-1,0)
             self.flip = True
             self.is_moving = True
             self.set_state('run')  
         elif keys[pg.K_d] and not self.is_crouched:
             self.dx += self.vel_x
-            self.direction = 1
+            self.direction = (1,0)
+            self.facing = (1,0)
             self.flip = False
             self.is_moving = True
             self.set_state('run') 
 
         # se nao estiver se movendo e nao estiver agachado
-        elif not self.is_crouched and not self.is_moving:
-            if not self.is_in_air:
-                self.set_state('idle')
+        elif not self.is_crouched and not self.is_in_air:
+            self.set_state('idle')
 
         # pular
         if keys[pg.K_SPACE] and not self.jump_pressed and not self.is_in_air:
@@ -118,31 +124,71 @@ class Player(Entity):
         if not keys[pg.K_SPACE]:
             self.jump_pressed = False
 
-    def shoot(self):
-        """Metodo responsavel pelas movimentacoes e animacoes de tiro do jogador"""
+    # def shoot(self):
+    #     """Metodo responsavel pelas movimentacoes e animacoes de tiro do jogador"""
+    #     if not self.is_shooting:
+    #         return
+
+
+    #     keys = pg.key.get_pressed()
+
+    #     if self.is_in_air:
+    #         if keys[pg.K_w]:
+    #             self.set_state('shoot_jump_up')  # tiro enquanto olha para cima no ar
+    #         elif keys[pg.K_s]:
+    #             self.set_state('shoot_jump_down')  # tiro enquanto olha para baixo no ar
+    #         else:
+    #             self.set_state('shoot_jump')  # tiro padrao no ar
+    #     elif self.is_crouched:
+    #         self.set_state('shoot_shift')  # tiro agachado
+    #     elif self.is_moving:
+    #         if keys[pg.K_w]:
+    #             self.set_state('shoot_run_up')  # tiro correndo olhando para cima
+    #         else:
+    #             self.set_state('shoot_run')  # tiro correndo normal
+    #     else:
+    #         if keys[pg.K_w]:  
+    #             self.set_state('shoot_up') # tiro para cima  parado
+    #         else:              
+    #             self.set_state('shoot') # tiro normal parado
+                
+            
+    def shoot_bullets(self, bullet_group: pg.sprite.Group):
+        """
+        Metodo responsavel por lidar com com o tiro de uma bala com um cooldown.
+        Parameters
+        ----------
+        bullet_group: pg.sprite.Group
+                Um grupo de sprites para armazenar as balas
+        Returns
+        -------
+        self.bullet_group: pg.sprite.Group
+                Um grupo de sprites com as balas ja armazenadas
+        """
+        self.bullet_group = bullet_group
+        current_time = time.time()
         keys = pg.key.get_pressed()
 
-        if self.is_in_air:
-            if keys[pg.K_w]:
-                self.set_state('shoot_jump_up')  # tiro enquanto olha para cima no ar
-            elif keys[pg.K_s]:
-                self.set_state('shoot_jump_down')  # tiro enquanto olha para baixo no ar
-            else:
-                self.set_state('shoot_jump')  # tiro padrao no ar
-        elif self.is_crouched:
-            self.set_state('shoot_shift')  # tiro agachado
-        elif self.is_moving:
-            if keys[pg.K_w]:
-                self.set_state('shoot_run_up')  # tiro correndo para cima
-            else:
-                self.set_state('shoot_run')  # tiro correndo normal
-        else:
-            if keys[pg.K_w]:  
-                self.set_state('shoot_up')  # tiro para cima enquanto parado
-            elif self.is_shooting:  
-                self.set_state('shoot') # tiro parado normal
+        if current_time - self.last_shot_time >= self.bullet_cooldown:
+            # mirando lateralmente
             
+            if self.is_in_air:
+                if keys[pg.K_w]:  # mirando pra cima no ar
+                    self.direction = (0, -1)
+                elif keys[pg.K_s]:  # mirando pra baixo no ar
+                    self.direction = (0, 1)
+            else:
+                self.direction = self.facing
+                
+        # criando a bala
+        self.bullet_player = Bullet(x=self.rect.centerx, y=self.rect.centery,
+                        direction=self.direction, img_path="assets/Player/player_bullet.png", speed=10, dmg=5)
+        self.bullet_group.add(self.bullet_player)  
+        self.last_shot_time = current_time 
 
+        return self.bullet_group
+
+    
     def _jump(self):
         "Metodo responsavel pelo movimento de pulo"
         if self.jump_count < self.jump_count_max:
@@ -163,8 +209,10 @@ class Player(Entity):
                     self.rect.bottom = other.rect.top
                     self.vel_y = 0
                     self.jump_count = 0 
-                    self.is_in_air = False 
+                    self.is_in_air = False
                 
+                    self.direction = self.facing
+
                     if self.is_crouched:
                         self.rect.top += 6
 
@@ -195,6 +243,9 @@ class Player(Entity):
 
     def animate(self):
         """Atualiza a animação, trocando o frame atual baseado na velocidade."""
+        if self.is_shooting:
+            self.shoot()
+
         self.current_time += self.animation_speed
         if self.current_time >= 1:
             self.index = (self.index + 1) % len(self.images[self.state])
@@ -216,8 +267,8 @@ class Player(Entity):
         self.rect.y += self.vel_y
         self.rect.x += self.dx
 
-        if self.is_shooting is True:
-            self.shoot()
+        # if self.is_shooting:
+        #     self.shoot()
 
     def draw(self, screen):
         """Módulo responsável por desenhar as sprites do jogador"""
