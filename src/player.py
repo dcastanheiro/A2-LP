@@ -205,7 +205,7 @@ class Player(Entity):
 
             if pg.sprite.collide_rect(self, other):
                 # colisao inferior (superior da plataforma)
-                if self.vel_y > 0 and abs(self.rect.bottom - other.rect.top) <= self._tolerance:
+                if self.vel_y > 0 and abs(self.rect.bottom - other.rect.top) <= self.__tolerance:
                     self.rect.bottom = other.rect.top
                     self.vel_y = 0
                     self.jump_count = 0 
@@ -217,19 +217,19 @@ class Player(Entity):
                         self.rect.top += 6
 
                 # colisao superior (inferior da plataforma)
-                elif self.vel_y < 0 and abs(self.rect.top - other.rect.bottom) <= self._tolerance:
+                elif self.vel_y < 0 and abs(self.rect.top - other.rect.bottom) <= self.__tolerance:
                     self.rect.top = other.rect.bottom
                     self.vel_y = 0
 
                 # colisao lateral pela direita
                 if self.dx > 0 and self.rect.right > other.rect.left and self.rect.left < other.rect.left:
-                    if self.rect.bottom > other.rect.top + self._tolerance and self.rect.top < other.rect.bottom - self._tolerance:
+                    if self.rect.bottom > other.rect.top + self.__tolerance and self.rect.top < other.rect.bottom - self.__tolerance:
                         self.rect.right = other.rect.left
                         self.dx = 0
 
                 # colisao lateral pela esquerda
                 elif self.dx < 0 and self.rect.left < other.rect.right and self.rect.right > other.rect.right:
-                    if self.rect.bottom > other.rect.top + self._tolerance and self.rect.top < other.rect.bottom - self._tolerance:
+                    if self.rect.bottom > other.rect.top + self.__tolerance and self.rect.top < other.rect.bottom - self.__tolerance:
                         self.rect.left = other.rect.right
                         self.dx = 0
                 
