@@ -5,7 +5,7 @@ import os
 import time
 from bullet import Bullet
 from map import Platform
-from settings import PX_SCALE
+from settings import PX_SCALE, SCREEN_HEIGHT, SCREEN_WIDTH
 from utils import load_image
 
 class Entity(pg.sprite.Sprite):
@@ -131,7 +131,8 @@ class Player(Entity):
 
 
     #     keys = pg.key.get_pressed()
-
+    #     if self.is_moving and self.is_shooting:
+    #         self.set_state('shoot_run')
     #     if self.is_in_air:
     #         if keys[pg.K_w]:
     #             self.set_state('shoot_jump_up')  # tiro enquanto olha para cima no ar
@@ -197,6 +198,17 @@ class Player(Entity):
             self.jump_count += 1
             self.is_in_air = True
 
+    def _on_out_of_bounds(self):
+        if self.rect.right > SCREEN_WIDTH:  
+            self.rect.right = SCREEN_WIDTH
+        if self.rect.left < 0:  
+            self.rect.left = 0
+        if self.rect.top < 0:   
+            self.rect.top = 0
+        if self.rect.bottom > SCREEN_HEIGHT:   
+            self.rect.bottom = SCREEN_HEIGHT
+            self.is_jumping = False
+
     def on_collision(self, other):
         """Metodo responsavel pela colisao do jogador com obstaculos"""
         if isinstance(other, Platform):
@@ -243,9 +255,6 @@ class Player(Entity):
 
     def animate(self):
         """Atualiza a animação, trocando o frame atual baseado na velocidade."""
-        if self.is_shooting:
-            self.shoot()
-
         self.current_time += self.animation_speed
         if self.current_time >= 1:
             self.index = (self.index + 1) % len(self.images[self.state])

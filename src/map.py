@@ -72,4 +72,47 @@ class Platform(pg.sprite.Sprite):
     def update(self):
         pass
 
+class Background:
+    """
+    Classe responsavel por gerenciar e desenhar o backgroun do 
+    
+    Parameters
+    ----------
+    layers: list
+        Lista de dicionarios com 'image' (str) e 'scroll_speed' (float).
+    screen_width: int
+        Largura da tela para calcular a rolagem.
+    """
+
+    def __init__(self, layers: list[str], screen_width: int, screen_height: int):
+        self.layers = []
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+
+        for layer_path in layers:
+            image = pg.image.load(layer_path).convert_alpha()
+            scaled_image = pg.transform.scale(image, (screen_width, screen_height))
+            self.layers.append(scaled_image)
+
+    def update(self):
+        """
+        Atualiza o background.
+        """
+        pass
+
+    def draw(self, screen):
+        """
+        Desenha o background na tela, camada por camada.
+        Parameters
+        ----------
+        screen: pg.Surface
+            Superfície onde o background sera desenhado.
+        """
+        for layer in self.layers:
+            screen.blit(layer, (0, 0))
+        
+        
+
+
+
     

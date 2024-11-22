@@ -2,69 +2,9 @@
 
 import pygame as pg
 from player import Player
-from map import Platform
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE
+from map import Platform, Background
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE, player_all_images_folders, map_layout, background_layers
 from bullet import Bullet
-
-player_all_images_folders = {
-            "idle":             "assets/Player/idle_right",
-            "jump":             "assets/Player/jump_right",
-            "jump_down":        "assets/Player/jump_right_down",
-            "jump_up":          "assets/Player/jump_right_up",
-            "run":              "assets/Player/run_right",
-            "crouch":            "assets/Player/shift_right",
-            "shoot_jump":       "assets/Player/shoot_jump_right",
-            "shoot_jump_down":  "assets/Player/shoot_jump_right_down",
-            "shoot_jump_up":    "assets/Player/shoot_jump_right_up",
-            "shoot":            "assets/Player/shoot_right",
-            "shoot_up":         "assets/Player/shoot_right_up",
-            "shoot_run":        "assets/Player/shoot_run_right",
-            "shoot_run_up":     "assets/Player/shoot_run_right_up",
-            "shoot_shift":      "assets/Player/shoot_shift_right",
-            "die":              "assets/Player/die_right"
-
-}
-
-# mapa: Cada "#" representa um bloco, e "." é um espaço vazio
-map_layout = [
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................##..............................",
-    "...........................................................................",
-    "...........................................................................",
-    "...........................................................................",
-    "............................................###............................",
-    ".......................#...................................................",
-    ".............#####..####...............###.................................",
-    "...............#..........................................................",
-    ".......#####...................................##..........................",
-    ".....########............####..........#####..#######......................",
-    "####################################..#####################################"
-]
-
 
 class Game:
     """
@@ -78,6 +18,13 @@ class Game:
         self.height = SCREEN_HEIGHT
         self.screen = pg.display.set_mode((self.width, self.height))
         pg.display.set_caption('Run n Gun')
+
+        # inicializar o background em camadas
+        self.background = Background(
+            background_layers,
+            screen_width=self.width,
+            screen_height=self.height
+        )
 
         # inicializando objetos
         self.player = Player(player_all_images_folders, x=60, y=120, vel=1)
@@ -113,34 +60,34 @@ class Game:
               self.run = False
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 self.player.shoot_bullets(self.bullet_group)
-            # elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            #     self.player.is_shooting = True
+                self.player.is_shooting = True
             # elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
             #     self.player.is_shooting = False   
             
 
     def update(self):
         """Metodo para atualizar o jogo"""
+        self.background.update()
         self.player.update()
         self.bullet_group.update()
-        self.check_bullet_collisions()
         for platform in self.platforms:
             platform.update()
         self.check_collision()
-        pg.display.update()
-
-    def check_bullet_collisions(self):
-        """Metodo responsavel pela colisao das balas com outros objetos"""
-        for bullet in self.bullet_group:
-            if pg.sprite.spritecollideany(bullet, self.platform_group):
-                bullet.kill()  
+        self.player._on_out_of_bounds()
+        pg.display.update()  
         
     def check_collision(self):
         """Metodo responsavel pela colisao entre objetos do mapa"""
+        # colisao do player com plataformas
         for platform in self.platforms:
             if self.player.rect.colliderect(platform.rect):
                 self.player.on_collision(platform)
                 platform.on_collision(self.player)
+
+        # colisao das balas com plataformas
+        for bullet in self.bullet_group:
+            if pg.sprite.spritecollideany(bullet, self.platform_group):
+                bullet.kill()
 
     def draw_grid(self):
         """Metodo para desenhar o grid na tela."""
@@ -151,7 +98,7 @@ class Game:
 
     def draw(self):
         """Metodo responsavel por desenhar os objetos na tela"""
-        self.screen.fill((0,0,0))
+        self.background.draw(self.screen)
         self.draw_grid()
         for platform in self.platforms:
             platform.draw(self.screen)  
