@@ -190,6 +190,7 @@ class Player(Entity):
         return self.bullet_group
 
     
+    
     def _jump(self):
         "Metodo responsavel pelo movimento de pulo"
         if self.jump_count < self.jump_count_max:
