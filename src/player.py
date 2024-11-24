@@ -65,13 +65,13 @@ class Player(Entity):
         self.is_shooting = False
         self.is_crouched = False
         self.is_in_air = False
-        self.gravity_up = 0.4  # gravidade na ascendencia do pulo
-        self.gravity_down = 0.1 # gravidade na descendencia do pulo
+        self.gravity_up = 0.5  # gravidade na ascendencia do pulo
+        self.gravity_down = 0.08 # gravidade na descendencia do pulo
         self.vel_y = 0
         self.jump_count = 0
         self.jump_count_max = 1
         self.jump_pressed = False
-        self.bullet_cooldown = 0.05  
+        self.bullet_cooldown = 0.5 
         self.last_shot_time = time.time()
      
     
@@ -183,7 +183,7 @@ class Player(Entity):
                 
         # criando a bala
         self.bullet_player = Bullet(x=self.rect.centerx, y=self.rect.centery,
-                        direction=self.direction, img_path="assets/Player/player_bullet.png", speed=10, dmg=5)
+                        direction=self.direction, img_path="assets/Player/player_bullet_3.png", speed=10, dmg=5)
         self.bullet_group.add(self.bullet_player)  
         self.last_shot_time = current_time 
 
@@ -213,7 +213,7 @@ class Player(Entity):
         """Metodo responsavel pela colisao do jogador com obstaculos"""
         if isinstance(other, Platform):
            # tolerancia para diferenciar colisoes horizontais e verticais
-            self.__tolerance = 15
+            self.__tolerance = 13
 
             if pg.sprite.collide_rect(self, other):
                 # colisao inferior (superior da plataforma)
