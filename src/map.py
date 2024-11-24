@@ -1,4 +1,5 @@
 """Modulo dedicado a criacao do mapa"""
+
 import pygame as pg
 from settings import TILE_SIZE
 from utils import load_tile

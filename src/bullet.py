@@ -1,3 +1,5 @@
+"""Modulo responsavel pela criacao das balas utilizadas pelo jogador e pelos inimigos"""
+
 from typing import Any
 import pygame as pg
 from utils import load_image
@@ -5,7 +7,24 @@ from settings import SCREEN_HEIGHT, SCREEN_WIDTH
 
 class Bullet(pg.sprite.Sprite):
     """
-    Preencher
+    Classe que representa as balas utilizadas no jogo.
+
+    Parameters
+    ----------
+    x: int
+        Posição do eixo x de criacao da bala
+    y: int
+        Posição do eixo y de criacao da bala
+    direction: tuple
+        Direção que a bala vai percorrer a tela
+    img_path: str
+        String representando a o caminho para a imagem da bala
+    speed: int
+        Velocidade de movimento da bala no ar
+    dmg: int
+        Dano que a bala inflinge em outras entidades
+
+        
     """
     def __init__(self, x: int, y: int, direction: tuple, img_path: str, speed: int, dmg: int):
         super().__init__()

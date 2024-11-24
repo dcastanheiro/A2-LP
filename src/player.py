@@ -214,7 +214,7 @@ class Player(Entity):
         """Metodo responsavel pela colisao do jogador com obstaculos"""
         if isinstance(other, Platform):
            # tolerancia para diferenciar colisoes horizontais e verticais
-            self.__tolerance = 13
+            self.__tolerance = 18
 
             if pg.sprite.collide_rect(self, other):
                 # colisao inferior (superior da plataforma)
