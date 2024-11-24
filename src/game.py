@@ -61,8 +61,8 @@ class Game:
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 self.player.shoot_bullets(self.bullet_group)
                 self.player.is_shooting = True
-            # elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            #     self.player.is_shooting = False   
+            elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
+                 self.player.is_shooting = False   
             
 
     def update(self):
