@@ -3,7 +3,7 @@
 import pygame as pg
 from player import Player
 from map import Platform, Background
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE, player_all_images_folders, map_layout, background_layers
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE, player_all_images_folders, map_layout, background_layers, map_tiles
 from bullet import Bullet
 
 class Game:
@@ -28,7 +28,7 @@ class Game:
 
         # inicializando objetos
         self.player = Player(player_all_images_folders, x=20, y=30, vel=1)
-        self.platforms = Platform.create_platform(map_layout=map_layout, img_path ="assets/Assets_area_2/tileset/platform_0.png")
+        self.platforms = Platform.create_platform(map_layout=map_layout, img_path=map_tiles)
 
         # inicializando grupo de sprites
         self.bullet_group = pg.sprite.Group()

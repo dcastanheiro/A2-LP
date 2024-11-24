@@ -27,7 +27,7 @@ class Platform(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(x, y))
 
     @classmethod
-    def create_platform(cls, map_layout: list, img_path, tile_width=TILE_SIZE, tile_height=TILE_SIZE) -> list:
+    def create_platform(cls, map_layout: list, img_path: dict, tile_width=TILE_SIZE, tile_height=TILE_SIZE) -> list:
         """
         Metodo de criacao da plataforma
 
@@ -48,10 +48,10 @@ class Platform(pg.sprite.Sprite):
         platforms = [] 
         for row_index, row in enumerate(map_layout):
             for col_index, tile in enumerate(row):
-                if tile == "#":
+                if tile in img_path:
                     x = col_index * tile_width
                     y = row_index * tile_height
-                    platform = cls(x, y, tile_width, tile_height, img_path)
+                    platform = cls(x, y, tile_width, tile_height, img_path[tile])
                     platforms.append(platform)
 
         return platforms  
