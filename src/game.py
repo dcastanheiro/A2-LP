@@ -27,7 +27,7 @@ class Game:
         )
 
         # inicializando objetos
-        self.player = Player(player_all_images_folders, x=20, y=40, vel=1)
+        self.player = Player(player_all_images_folders, x=20, y=30, vel=1)
         self.platforms = Platform.create_platform(map_layout=map_layout, img_path ="assets/Assets_area_2/tileset/platform_0.png")
 
         # inicializando grupo de sprites
