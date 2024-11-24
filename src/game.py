@@ -2,6 +2,7 @@
 
 import pygame as pg
 from player import Player
+from enemy import Enemy
 from map import Platform, Background
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE, player_all_images_folders, map_layout, background_layers, map_tiles
 from bullet import Bullet
@@ -29,6 +30,41 @@ class Game:
         # inicializando objetos
         self.player = Player(player_all_images_folders, x=20, y=30, vel=1)
         self.platforms = Platform.create_platform(map_layout=map_layout, img_path=map_tiles)
+
+        # criar os grupos de balas dos inimigos
+        self.bazooka_bullets = pg.sprite.Group()
+        self.sniper_bullets = pg.sprite.Group()
+
+        # criar os inimigos
+        self.enemies = pg.sprite.Group()
+
+        self.bazooka_enemy = Enemy(
+            images_folders={
+                "idle": "assets/Enemies/bazooka/idle",
+                "shoot": "assets/Enemies/bazooka/shoot",
+            },
+            x=300,
+            y=210,
+            health=50,
+            bullet_group=self.bazooka_bullets,
+            bullet_type="bazooka",
+            shoot_interval=2.0
+        )
+
+        self.sniper_enemy = Enemy(
+            images_folders={
+                "idle": "assets/Enemies/sniper/idle",
+                "shoot": "assets/Enemies/sniper/shoot",
+            },
+            x=600,
+            y=150,
+            health=30,
+            bullet_group=self.sniper_bullets,
+            bullet_type="sniper",
+            shoot_interval=1.0
+        )
+
+        self.enemies.add(self.bazooka_enemy, self.sniper_enemy)
 
         # inicializando grupo de sprites
         self.bullet_group = pg.sprite.Group()
@@ -72,6 +108,10 @@ class Game:
         self.bullet_group.update()
         for platform in self.platforms:
             platform.update()
+
+        for enemy in self.enemies:
+            enemy.update(self.player.rect.centerx, self.player.rect.centery)
+            self.bullet_group.add(enemy.bullet_group)
         self.check_collision()
         self.player._on_out_of_bounds()
         pg.display.update()  
@@ -101,7 +141,8 @@ class Game:
         self.background.draw(self.screen)
         self.draw_grid()
         for platform in self.platforms:
-            platform.draw(self.screen)  
+            platform.draw(self.screen)
+        self.enemies.draw(self.screen)  
         self.player.draw(self.screen)
         self.bullet_group.draw(self.screen)
         pg.display.flip()

@@ -42,3 +42,19 @@ class Bullet(pg.sprite.Sprite):
         # caso saia do limite da tela
         if not (0 <= self.rect.x <= SCREEN_WIDTH) or not (0 <= self.rect.y <= SCREEN_HEIGHT):
             self.kill()  
+
+
+class BazookaBullet(Bullet):
+    """
+    Bala de bazuca, lenta, mas com alto dano
+    """
+    def __init__(self, x: int, y: int, direction: tuple):
+        super().__init__(x, y, direction, "assets/Enemies/bazooka/bazooka_bullet.png", speed=5, dmg=15)
+
+
+class SniperBullet(Bullet):
+    """
+    Bala de sniper, rápida, mas com dano moderado
+    """
+    def __init__(self, x: int, y: int, direction: tuple):
+        super().__init__(x, y, direction, "assets/Enemies/sniper/sniper_bullet.png", speed=12, dmg=10)
