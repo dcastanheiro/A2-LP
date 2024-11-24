@@ -82,21 +82,21 @@ class Player(Entity):
         self.dx = 0
 
         # agacha
-        if keys[pg.K_s] or keys[pg.K_DOWN] and not self.is_in_air:
+        if keys[pg.K_s] and not self.is_in_air:
             self.set_state('crouch')
             self.is_crouched = True
         else:
             self.is_crouched = False
 
         # movimentaçao lateral
-        if keys[pg.K_a] or keys[pg.K_LEFT] and not self.is_crouched:
+        if keys[pg.K_a] and not self.is_crouched:
             self.dx -= self.vel_x
             self.direction = (-1,0)
             self.facing = (-1,0)
             self.flip = True
             self.is_moving = True
             self.set_state('run')  
-        elif keys[pg.K_d] or keys[pg.K_RIGHT]  and not self.is_crouched:
+        elif keys[pg.K_d]  and not self.is_crouched:
             self.dx += self.vel_x
             self.direction = (1,0)
             self.facing = (1,0)
@@ -109,19 +109,19 @@ class Player(Entity):
             self.set_state('idle')
 
         # pular
-        if keys[pg.K_SPACE] or keys[pg.K_w] or keys[pg.K_UP] and not self.jump_pressed and not self.is_in_air:
+        if keys[pg.K_SPACE] and not self.jump_pressed and not self.is_in_air:
             self._jump()
             self.jump_pressed = True
 
         # olhar para cima ou para baixo durante o pulo
         if self.is_in_air:
-            if keys[pg.K_w] or keys[pg.K_UP]:
+            if keys[pg.K_w] :
                 self.set_state('jump_up')
-            elif keys[pg.K_s] or keys[pg.K_DOWN]:
+            elif keys[pg.K_s] :
                 self.set_state('jump_down')
 
         # resetar o pulo
-        if not keys[pg.K_SPACE] or keys[pg.K_w] or keys[pg.K_UP]:
+        if not keys[pg.K_SPACE]:
             self.jump_pressed = False
 
     # def shoot(self):
