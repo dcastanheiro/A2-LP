@@ -2,12 +2,10 @@ import pygame as pg
 import sys
 import os
 
-# Configuração do driver de vídeo do Pygame para evitar erros relacionados ao OpenGL
 os.environ["SDL_VIDEODRIVER"] = "x11"
 
 pg.init()
 
-# Configurações da tela
 screen_width = 1280
 screen_height = 720
 screen = pg.display.set_mode((screen_width, screen_height))
@@ -16,9 +14,8 @@ pg.display.set_caption("Run 'n gun")
 # Cores
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
-DARK_GRAY = (50, 50, 50)  # Cor de fundo para contraste
+DARK_GRAY = (50, 50, 50)
 
-# Configurações da fonte
 font_path = '/home/matheus/A2-LP/assets/fonts/PressStart2P-Regular.ttf'
 font = pg.font.Font(font_path, 32)
 small_font = pg.font.Font(font_path, 20)
@@ -28,25 +25,21 @@ class MainMenu:
         self.game_manager = game_manager
 
     def draw(self, screen):
-        # Define o fundo do menu
         screen.fill(DARK_GRAY)
 
-        # Título do jogo
         self.draw_text("Run 'n gun", font, WHITE, screen_width // 2 - 200, 50)
 
-        # Botões
+        # botões
         play_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
         exit_button = pg.Rect(20, 20, 100, 40)
 
-        # Desenha os botões com borda
-        pg.draw.rect(screen, WHITE, play_button, 2)  # Borda branca do botão Play
-        pg.draw.rect(screen, WHITE, exit_button, 2)  # Borda branca do botão Exit
+        pg.draw.rect(screen, WHITE, play_button, 2)  # borda branca do botão Play
+        pg.draw.rect(screen, WHITE, exit_button, 2)  # borda branca do botão Exit
 
-        # Texto dos botões
         self.draw_text("Play", small_font, WHITE, screen_width // 2 - 30, screen_height // 2 - 40)
         self.draw_text("Exit", small_font, WHITE, 40, 30)
 
-        # Créditos
+        # créditos
         self.draw_text(
             "Bernardo Vasconcelos, Dilmar Castanheiro, Matheus Constantin",
             small_font,
@@ -59,11 +52,11 @@ class MainMenu:
         if event.type == pg.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pg.mouse.get_pos()
 
-            # Verificar se o botão "Play" foi clicado
+            # verificar se o botão "Play" foi clicado
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 - 50 < mouse_y < screen_height // 2:
                 self.game_manager.change_state("game_level")
 
-            # Verificar se o botão "Exit" foi clicado
+            # verificar se o botão "Exit" foi clicado
             if 20 < mouse_x < 120 and 20 < mouse_y < 60:
                 self.game_manager.is_running = False
 
@@ -88,7 +81,6 @@ class GameLevel:
         pg.draw.rect(screen, WHITE, map1_button, 2)
         self.draw_text("Mapa 1", small_font, WHITE, screen_width // 2 - 50, screen_height // 2 - 40)
 
-        # Botão para voltar
         back_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 + 20, 200, 50)
         pg.draw.rect(screen, WHITE, back_button, 2)
         self.draw_text("Voltar", small_font, WHITE, screen_width // 2 - 50, screen_height // 2 + 30)
@@ -97,11 +89,11 @@ class GameLevel:
         if event.type == pg.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pg.mouse.get_pos()
 
-            # Verifica se o botão "Mapa 1" foi clicado
+            # verifica se o botão "Mapa 1" foi clicado
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 - 50 < mouse_y < screen_height // 2:
                 self.game_manager.change_state("choose_difficulty")
 
-            # Verifica se o botão "Voltar" foi clicado
+            # verifica se o botão "Voltar" foi clicado
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 + 20 < mouse_y < screen_height // 2 + 70:
                 self.game_manager.change_state("main_menu")
 
@@ -137,7 +129,6 @@ class ChooseDifficulty:
         if event.type == pg.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pg.mouse.get_pos()
 
-            # Verifica os botões de dificuldade
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 - 50 < mouse_y < screen_height // 2:
                 print("Dificuldade: Normal")
                 self.game_manager.is_running = False
@@ -166,7 +157,7 @@ class GameManager:
         self.is_running = False
 
     def change_state(self, screen_name):
-        # Depuração para verificar os estados disponíveis e o estado solicitado
+        # depuração para verificar os estados disponíveis e o estado solicitado
         print(f"Trocando para o estado: {screen_name}")
         print(f"Estados disponíveis: {list(self.screen_map.keys())}")
         if screen_name not in self.screen_map:
