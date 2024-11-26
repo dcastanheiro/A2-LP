@@ -43,7 +43,7 @@ class Game:
                 "idle": "assets/Enemies/bazooka/idle",
                 "shoot": "assets/Enemies/bazooka/shoot",
             },
-            x=300,
+            x=320,
             y=210,
             health=50,
             bullet_group=self.bazooka_bullets,

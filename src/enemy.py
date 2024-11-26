@@ -87,16 +87,21 @@ class Enemy(Entity):
         """
         Verifica se o jogador está na direção e alcance do inimigo.
         """
-        # Distância máxima para ver o jogador (pode ajustar)
-        max_distance = 400
+        max_distance_horizontal = 400
+        max_distance_vertical = 10
 
-        # Verifica direção horizontal
+        # verifica alcance horizontal e vertical
+        in_horizontal_range = abs(target_x - self.rect.centerx) <= max_distance_horizontal
+        in_vertical_range = abs(target_y - self.rect.centery) <= max_distance_vertical
+
         if self.direction == 1 and target_x > self.rect.centerx:  # Olhando para a direita
-            return abs(target_x - self.rect.centerx) <= max_distance
+            is_in_direction = True
         elif self.direction == -1 and target_x < self.rect.centerx:  # Olhando para a esquerda
-            return abs(target_x - self.rect.centerx) <= max_distance
+            is_in_direction = True
+        else:
+            is_in_direction = False
 
-        return False
+        return in_horizontal_range and in_vertical_range and is_in_direction
 
     def take_damage(self, amount: int):
         """
