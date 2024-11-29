@@ -55,7 +55,7 @@ class Enemy(Entity):
             self.image = self.images[self.state][self.index]
             self.current_time = 0
 
-    def shoot(self, target_x: int, target_y: int):
+    def shoot(self, target_x: int, target_y: int, platforms: pg.sprite.Group):
         """
         Faz o inimigo disparar balas em direcao a um alvo.
 
@@ -65,10 +65,12 @@ class Enemy(Entity):
             Posicao x do alvo
         target_y: int
             Posicao y do alvo.
+        platforms : pg.sprite.Group
+            Grupo de obstaculos do jogo
         """
         current_time = time.time()
         if current_time - self.last_shot_time >= self.shoot_interval:
-            if self._can_see_player(target_x, target_y):
+            if self._can_see_player(target_x, target_y, platforms):
                 # atirar reto
                 direction = (self.direction, 0)
 
@@ -83,9 +85,20 @@ class Enemy(Entity):
     
                 self.set_state("shoot")
 
-    def _can_see_player(self, target_x, target_y):
+    def _can_see_player(self, target_x, target_y, platforms):
         """
         Verifica se o jogador está na direção e alcance do inimigo.
+        ----------
+        player_x : int
+            Posicao x do jogador
+        player_y : int
+            Posicao y do jogador
+        platforms : pg.sprite.Group
+            Grupo de obstaculos do jogo.
+        Returns
+        -------
+        bool
+            Verdadeiro se o inimigo pode ver o jogador, falso caso contrário.   
         """
         max_distance_horizontal = 400
         max_distance_vertical = 10
@@ -101,7 +114,37 @@ class Enemy(Entity):
         else:
             is_in_direction = False
 
-        return in_horizontal_range and in_vertical_range and is_in_direction
+        path_clear = self._is_path_clear(target_x, target_y, platforms)
+
+        return in_horizontal_range and in_vertical_range and is_in_direction and path_clear
+
+    def _is_path_clear(self, target_x, target_y, platforms):
+        """
+        Verifica se existem plataformas no caminho entre a visão do inimigo e o jogador
+        Parameters
+        ----------
+        target_x : int
+            Posicao x do jogador
+        target_y : int
+            Posicao y do jogador
+        platforms : pg.sprite.Group
+            Grupo de obstaculos do jogo
+
+        Returns
+        -------
+        bool
+            Verdadeiro se o caminho estiver livre, falso se houver obstaculos
+        """
+
+        # cria uma linha imaginária entre o inimigo e o jogador
+        start = self.rect.center
+        end = (target_x, target_y)
+
+        for platform in platforms:
+            if platform.rect.clipline(start, end):  # verifica intersecao da linha com a plataforma
+                return False
+
+        return True
 
     def take_damage(self, amount: int):
         """
@@ -116,9 +159,9 @@ class Enemy(Entity):
         if self.health <= 0:
             self.kill()  
 
-    def update(self, target_x: int, target_y: int):
+    def update(self, target_x: int, target_y: int, platforms: pg.sprite.Group):
         """
-        Atualiza o estado do inimigo, incluindo a lógica de disparo
+        Atualiza o estado do inimigo.
 
         Parameters
         ----------
@@ -126,8 +169,11 @@ class Enemy(Entity):
             Posição x do alvo.
         target_y: int
             Posição y do alvo.
+        platforms: pg.sprite.Group
+            Grupo de obstaculos do jogo
+            
         """
-        self.shoot(target_x, target_y)
+        self.shoot(target_x, target_y, platforms)
 
         # animacao de atirar
         if self.state == "shoot":

@@ -110,7 +110,7 @@ class Game:
             platform.update()
 
         for enemy in self.enemies:
-            enemy.update(self.player.rect.centerx, self.player.rect.centery)
+            enemy.update(self.player.rect.centerx, self.player.rect.centery, self.platform_group)
             self.bullet_group.add(enemy.bullet_group)
         self.check_collision()
         self.player._on_out_of_bounds()
