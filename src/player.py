@@ -52,8 +52,9 @@ class Player(Entity):
     vel: int
         Velocidade de movimento do jogador
     """
-    def __init__(self, images_folders: dict, x: int, y: int, vel: int):
+    def __init__(self, life, images_folders: dict, x: int, y: int, vel: int):
         super().__init__(images_folders, x, y)
+        self.life = life
         self.vel_x = vel
         self.dx = 0
         self.direction = (1,0) # quaisquer das 4 direcoes
@@ -188,8 +189,6 @@ class Player(Entity):
         self.last_shot_time = current_time 
 
         return self.bullet_group
-
-    
     
     def _jump(self):
         "Metodo responsavel pelo movimento de pulo"
@@ -280,6 +279,29 @@ class Player(Entity):
         # if self.is_shooting:
         #     self.shoot()
 
+    def draw_healthbar(self, screen):
+        """
+        Módulo responsável por escrever a quantidade de vida do jogador na tela
+        Parameters
+        ----------
+        screen: pg.Surface
+            Superficie onde o jogador será desenhado
+        """
+        
+        pg.draw.rect(screen, (0,0,0), (50, 50, 50, 10))
+        
+        health_ratio = self.life[0] / self.life[1]
+        green_width = int(50 * health_ratio)
+        
+        pg.draw.rect(screen, (255, 0, 0), (50, 50, 50, 10))
+        
+        pg.draw.rect(screen, (0, 255, 0), (50, 50, green_width, 10))
+        
+        font = pg.font.SysFont(None, 36)
+        health_text = font.render(f"{self.life[0]}/{self.life[1]}", True, (255, 255, 255))
+        text_rect = health_text.get_rect(center=(50 + 50 // 2, 50 + 10 // 2))
+        screen.blit(health_text, text_rect)
+
     def draw(self, screen):
         """
         Módulo responsável por desenhar as sprites do jogador
@@ -291,3 +313,8 @@ class Player(Entity):
         screen.blit(pg.transform.flip(self.image, self.flip, False), self.rect)
         self.update()
         self.movement()
+        self.draw_healthbar(screen)
+
+
+
+    

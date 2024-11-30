@@ -28,7 +28,7 @@ class Game:
         )
 
         # inicializando objetos
-        self.player = Player(player_all_images_folders, x=20, y=30, vel=1)
+        self.player = Player((100,100),player_all_images_folders, x=20, y=30, vel=1)
         self.platforms = Platform.create_platform(map_layout=map_layout, img_path=map_tiles)
 
         # criar os grupos de balas dos inimigos
