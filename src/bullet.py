@@ -49,7 +49,7 @@ class BazookaBullet(Bullet):
     Bala de bazuca, lenta, mas com alto dano
     """
     def __init__(self, x: int, y: int, direction: tuple):
-        super().__init__(x, y, direction, "assets/Enemies/bazooka/bazooka_bullet.png", speed=5, dmg=15)
+        super().__init__(x, y, direction, "../assets/Enemies/bazooka/bazooka_bullet.png", speed=5, dmg=15)
 
 
 class SniperBullet(Bullet):
@@ -57,4 +57,4 @@ class SniperBullet(Bullet):
     Bala de sniper, rápida, mas com dano moderado
     """
     def __init__(self, x: int, y: int, direction: tuple):
-        super().__init__(x, y, direction, "assets/Enemies/sniper/sniper_bullet.png", speed=12, dmg=10)
+        super().__init__(x, y, direction, "../assets/Enemies/sniper/sniper_bullet.png", speed=12, dmg=10)

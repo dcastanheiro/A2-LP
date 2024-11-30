@@ -40,8 +40,8 @@ class Game:
 
         self.bazooka_enemy = Enemy(
             images_folders={
-                "idle": "assets/Enemies/bazooka/idle",
-                "shoot": "assets/Enemies/bazooka/shoot",
+                "idle": "../assets/Enemies/bazooka/idle",
+                "shoot": "../assets/Enemies/bazooka/shoot",
             },
             x=320,
             y=210,
@@ -53,8 +53,8 @@ class Game:
 
         self.sniper_enemy = Enemy(
             images_folders={
-                "idle": "assets/Enemies/sniper/idle",
-                "shoot": "assets/Enemies/sniper/shoot",
+                "idle": "../assets/Enemies/sniper/idle",
+                "shoot": "../assets/Enemies/sniper/shoot",
             },
             x=600,
             y=150,
