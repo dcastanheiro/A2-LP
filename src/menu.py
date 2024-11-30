@@ -2,8 +2,6 @@ import pygame as pg
 import sys
 import os
 
-os.environ["SDL_VIDEODRIVER"] = "x11"
-
 pg.init()
 
 screen_width = 1280
@@ -11,18 +9,16 @@ screen_height = 720
 screen = pg.display.set_mode((screen_width, screen_height))
 pg.display.set_caption("Run 'n gun")
 
-# Cores
 WHITE = (255, 255, 255)
 GREEN = (34, 139, 34)
 YELLOW = (255, 215, 0)
 RED = (255, 0, 0)
 DARK_GRAY = (50, 50, 50)
 
-# Determinar caminho dinâmico da fonte
 base_dir = os.path.dirname(os.path.abspath(__file__))
 font_path = os.path.join(base_dir, "..", "assets", "fonts", "PressStart2P-Regular.ttf")
 
-# Carregar fontes com fallback
+# carregar a fonte
 if os.path.exists(font_path):
     font = pg.font.Font(font_path, 32)
     small_font = pg.font.Font(font_path, 20)
@@ -45,7 +41,7 @@ class MainMenu:
         exit_button = pg.Rect(20, 20, 100, 40)
 
         pg.draw.rect(screen, WHITE, play_button, 2)  # borda branca do botão Play
-        pg.draw.rect(screen, RED, exit_button, 2)  # borda branca do botão Exit
+        pg.draw.rect(screen, RED, exit_button, 2)  # borda vermelha do botão Exit
 
         self.draw_text("Play", small_font, WHITE, screen_width // 2 - 30, screen_height // 2 - 40)
         self.draw_text("Exit", small_font, RED, 40, 30)
@@ -79,10 +75,9 @@ class GameLevel:
 
     def draw(self, screen):
         screen.fill(DARK_GRAY)
-
         self.draw_text("Choose the Map", font, WHITE, screen_width // 2 - 150, 50)
-
-        # Botão para Mapa 1
+        
+        # botão para Mapa 1
         map1_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
         pg.draw.rect(screen, WHITE, map1_button, 2)
         self.draw_text("Map 1", small_font, WHITE, screen_width // 2 - 50, screen_height // 2 - 40)
@@ -99,7 +94,7 @@ class GameLevel:
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 - 50 < mouse_y < screen_height // 2:
                 self.game_manager.change_state("choose_difficulty")
 
-            # verifica se o botão "Voltar" foi clicado
+            # verifica se o botão "Back" foi clicado
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 + 20 < mouse_y < screen_height // 2 + 70:
                 self.game_manager.change_state("main_menu")
 
@@ -116,9 +111,9 @@ class ChooseDifficulty:
 
     def draw(self, screen):
         screen.fill(DARK_GRAY)
-        self.draw_text("Escolha a Dificuldade", font, WHITE, screen_width // 2 - 250, 50)
+        self.draw_text("Difficulty Level", font, WHITE, screen_width // 2 - 250, 50)
 
-        # Botões de dificuldade
+        # botões de dificuldade
         normal_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
         hard_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 + 10, 200, 50)
         insane_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 + 70, 200, 50)
