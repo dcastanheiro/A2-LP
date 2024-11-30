@@ -183,7 +183,7 @@ class Player(Entity):
                 
         # criando a bala
         self.bullet_player = Bullet(x=self.rect.centerx, y=self.rect.centery,
-                        direction=self.direction, img_path="assets/Player/player_bullet_3.png", speed=10, dmg=5)
+                        direction=self.direction, img_path="../assets/Player/player_bullet_3.png", speed=10, dmg=5)
         self.bullet_group.add(self.bullet_player)  
         self.last_shot_time = current_time 
 
