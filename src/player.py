@@ -263,7 +263,7 @@ class Player(Entity):
             self.current_time = 0
 
     def update(self):
-        """Metodo responsavel por atualizar a animação."""
+        """Metodo responsavel por atualizar o estado do jogador."""
         self.animate()
 
         if self.vel_y < 0:  # ascendente
@@ -281,7 +281,13 @@ class Player(Entity):
         #     self.shoot()
 
     def draw(self, screen):
-        """Módulo responsável por desenhar as sprites do jogador"""
+        """
+        Módulo responsável por desenhar as sprites do jogador
+        Parameters
+        ----------
+        screen: pg.Surface
+            Superficie onde o jogador será desenhado
+        """
         screen.blit(pg.transform.flip(self.image, self.flip, False), self.rect)
         self.update()
         self.movement()

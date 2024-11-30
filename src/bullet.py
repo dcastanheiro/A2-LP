@@ -58,3 +58,10 @@ class SniperBullet(Bullet):
     """
     def __init__(self, x: int, y: int, direction: tuple):
         super().__init__(x, y, direction, "../assets/Enemies/sniper/sniper_bullet.png", speed=12, dmg=10)
+
+class ArBullet(Bullet):
+    """
+    Bala para inimigo do tipo AR (automatic rifle).
+    """
+    def __init__(self, x: int, y: int, direction: tuple):
+        super().__init__(x, y, direction, "../assets/Enemies/ar/ar_bullet.png", speed=8, dmg=10)

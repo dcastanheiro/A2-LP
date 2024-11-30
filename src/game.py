@@ -2,7 +2,7 @@
 
 import pygame as pg
 from player import Player
-from enemy import Enemy
+from enemy import Enemy, ArEnemy
 from map import Platform, Background
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE, player_all_images_folders, map_layout, background_layers, map_tiles
 from bullet import Bullet
@@ -34,8 +34,9 @@ class Game:
         # criar os grupos de balas dos inimigos
         self.bazooka_bullets = pg.sprite.Group()
         self.sniper_bullets = pg.sprite.Group()
+        self.ar_bullets = pg.sprite.Group()
 
-        # criar os inimigos
+        # criar o grupo dos inimigos
         self.enemies = pg.sprite.Group()
 
         self.bazooka_enemy = Enemy(
@@ -64,7 +65,22 @@ class Game:
             shoot_interval=1.0
         )
 
-        self.enemies.add(self.bazooka_enemy, self.sniper_enemy)
+        self.ar_enemy = ArEnemy(
+            images_folders={
+                "walk": "../assets/Enemies/ar/walk",
+                "shoot": "../assets/Enemies/ar/shoot",
+                "idle": "../assets/Enemies/ar/idle"
+            },
+            x=600,  # Posição inicial
+            y=145,  # Posição inicial
+            health=20,
+            bullet_group=self.ar_bullets,  
+            bullet_type="ar",  
+            shoot_interval=0.5,  
+            patrol_speed=1.5  
+        )
+
+        self.enemies.add(self.bazooka_enemy, self.sniper_enemy, self.ar_enemy)
 
         # inicializando grupo de sprites
         self.bullet_group = pg.sprite.Group()
@@ -142,7 +158,8 @@ class Game:
         self.draw_grid()
         for platform in self.platforms:
             platform.draw(self.screen)
-        self.enemies.draw(self.screen)  
+        for enemie in self.enemies:
+            enemie.draw(self.screen)
         self.player.draw(self.screen)
         self.bullet_group.draw(self.screen)
         pg.display.flip()
