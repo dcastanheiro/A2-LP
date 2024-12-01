@@ -6,6 +6,7 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FPS = 60
 
+
 # dicionario para sprites do jogador
 player_all_images_folders = {
             "idle":             "../assets/Player/idle_right",

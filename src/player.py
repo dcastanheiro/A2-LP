@@ -52,9 +52,12 @@ class Player(Entity):
     vel: int
         Velocidade de movimento do jogador
     """
-    def __init__(self, life, images_folders: dict, x: int, y: int, vel: int):
+    def __init__(self, max_life, max_ammo, images_folders: dict, x: int, y: int, vel: int):
         super().__init__(images_folders, x, y)
-        self.life = life
+        self.max_life = max_life
+        self.life = max_life
+        self.max_ammo = max_ammo
+        self.ammo = max_ammo
         self.vel_x = vel
         self.dx = 0
         self.direction = (1,0) # quaisquer das 4 direcoes
@@ -279,28 +282,39 @@ class Player(Entity):
         # if self.is_shooting:
         #     self.shoot()
 
-    def draw_healthbar(self, screen):
+    def draw_hud(self, screen):
         """
-        Módulo responsável por escrever a quantidade de vida do jogador na tela
+        Módulo responsável por desenhar a HUD, que contém vida e munição
         Parameters
         ----------
         screen: pg.Surface
             Superficie onde o jogador será desenhado
         """
-        
-        pg.draw.rect(screen, (0,0,0), (50, 50, 50, 10))
-        
-        health_ratio = self.life[0] / self.life[1]
-        green_width = int(50 * health_ratio)
-        
-        pg.draw.rect(screen, (255, 0, 0), (50, 50, 50, 10))
-        
-        pg.draw.rect(screen, (0, 255, 0), (50, 50, green_width, 10))
-        
-        font = pg.font.SysFont(None, 36)
-        health_text = font.render(f"{self.life[0]}/{self.life[1]}", True, (255, 255, 255))
-        text_rect = health_text.get_rect(center=(50 + 50 // 2, 50 + 10 // 2))
-        screen.blit(health_text, text_rect)
+        # Define tamanho e coordenadas dos retangulos
+        rect_width, rect_height = 100, 20
+        health_x, health_y = 20, 20
+        ammo_x, ammo_y = 140, 20
+
+        health_ratio = self.life / self.max_life
+        ammo_ratio = self.ammo / self.max_ammo
+        green_width = int(rect_width * health_ratio)
+        yellow_width = int(rect_width * ammo_ratio)
+
+        # Desenha os retangulos
+        pg.draw.rect(screen, (0, 0, 0), (health_x - 5, health_y - 5, rect_width + 10, rect_height + 10))
+        pg.draw.rect(screen, (200, 0, 0), (health_x, health_y, rect_width, rect_height))
+        pg.draw.rect(screen, (0, 100, 0), (health_x, health_y, green_width, rect_height))
+        pg.draw.rect(screen, (0, 0, 0), (ammo_x - 5, ammo_y - 5, rect_width + 10, rect_height + 10))
+        pg.draw.rect(screen, (200, 200, 0), (ammo_x, ammo_y, rect_width, rect_height))
+
+        # Escreve a quantidade de vida e munição
+        font = pg.font.SysFont(None, 30)
+        health_text = font.render(f"{self.life}/{self.max_life}", True, (255, 255, 255))
+        health_text_rect = health_text.get_rect(center=(health_x + rect_width / 2, health_y + rect_height / 2 + 1))
+        screen.blit(health_text, health_text_rect)
+        ammo_text = font.render(f"{self.ammo}/{self.max_ammo}", True, (255, 255, 255))
+        ammo_text_rect = health_text.get_rect(center=(10 + ammo_x + rect_width / 2, ammo_y + rect_height / 2 + 1))
+        screen.blit(ammo_text, ammo_text_rect)
 
     def draw(self, screen):
         """
@@ -313,7 +327,7 @@ class Player(Entity):
         screen.blit(pg.transform.flip(self.image, self.flip, False), self.rect)
         self.update()
         self.movement()
-        self.draw_healthbar(screen)
+        self.draw_hud(screen)
 
 
 
