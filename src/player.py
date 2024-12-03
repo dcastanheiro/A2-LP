@@ -75,8 +75,11 @@ class Player(Entity):
         self.jump_count = 0
         self.jump_count_max = 1
         self.jump_pressed = False
-        self.bullet_cooldown = 0.5 
+        self.bullet_cooldown = 0.1
         self.last_shot_time = time.time()
+        self.is_reloading = False
+        self.last_reload_time = time.time()
+        self.reload_cooldown = 1.5
      
     
     def movement(self):
@@ -170,29 +173,57 @@ class Player(Entity):
         self.bullet_group: pg.sprite.Group
                 Um grupo de sprites com as balas ja armazenadas
         """
+        
         self.bullet_group = bullet_group
         current_time = time.time()
         keys = pg.key.get_pressed()
+        if self.ammo > 0 and not self.is_reloading:
 
-        if current_time - self.last_shot_time >= self.bullet_cooldown:
-            # mirando lateralmente
-            
-            if self.is_in_air:
-                if keys[pg.K_w]:  # mirando pra cima no ar
-                    self.direction = (0, -1)
-                elif keys[pg.K_s]:  # mirando pra baixo no ar
-                    self.direction = (0, 1)
-            else:
-                self.direction = self.facing
+            if current_time - self.last_shot_time >= self.bullet_cooldown:
+                # mirando lateralmente
                 
-        # criando a bala
-        self.bullet_player = Bullet(x=self.rect.centerx, y=self.rect.centery,
-                        direction=self.direction, img_path="../assets/Player/player_bullet_3.png", speed=10, dmg=5)
-        self.bullet_group.add(self.bullet_player)  
-        self.last_shot_time = current_time 
+                if self.is_in_air:
+                    if keys[pg.K_w]:  # mirando pra cima no ar
+                        self.direction = (0, -1)
+                    elif keys[pg.K_s]:  # mirando pra baixo no ar
+                        self.direction = (0, 1)
+                else:
+                    self.direction = self.facing
+                    
+                # criando a bala
+                self.bullet_player = Bullet(x=self.rect.centerx, y=self.rect.centery,
+                                direction=self.direction, img_path="../assets/Player/player_bullet_3.png", speed=10, dmg=5)
+                self.bullet_group.add(self.bullet_player)  
+                self.last_shot_time = current_time 
+                self.ammo -= 1
 
+                
         return self.bullet_group
-    
+            
+    def reload(self):
+        current_time = time.time()
+        keys = pg.key.get_pressed()
+
+        # Iniciar recarga se a tecla for pressionada e as condições forem atendidas
+        if (keys[pg.K_r] or self.ammo == 0) and self.ammo < self.max_ammo and not self.is_reloading and current_time - self.last_reload_time >= self.reload_cooldown:
+            self.is_reloading = True
+            self.ammo = 0
+            self.last_reload_time = current_time
+
+        # Continuar processo de recarga se já estiver recarregando
+        if self.is_reloading:
+            time_per_bullet = self.reload_cooldown / self.max_ammo
+            bullets_reloaded = int((current_time - self.last_reload_time) / time_per_bullet)
+            
+            # Garantir que `self.ammo` não ultrapasse `self.max_ammo`
+            self.ammo = min(self.max_ammo, bullets_reloaded)
+
+            # Finalizar recarga quando a munição atingir o máximo
+            if self.ammo >= self.max_ammo:
+                self.ammo = self.max_ammo
+                self.is_reloading = False
+
+
     def _jump(self):
         "Metodo responsavel pelo movimento de pulo"
         if self.jump_count < self.jump_count_max:
@@ -267,7 +298,7 @@ class Player(Entity):
     def update(self):
         """Metodo responsavel por atualizar o estado do jogador."""
         self.animate()
-
+        self.reload()
         if self.vel_y < 0:  # ascendente
             self.vel_y += self.gravity_up
         elif self.vel_y > 0:  # descendente
@@ -305,7 +336,7 @@ class Player(Entity):
         pg.draw.rect(screen, (200, 0, 0), (health_x, health_y, rect_width, rect_height))
         pg.draw.rect(screen, (0, 100, 0), (health_x, health_y, green_width, rect_height))
         pg.draw.rect(screen, (0, 0, 0), (ammo_x - 5, ammo_y - 5, rect_width + 10, rect_height + 10))
-        pg.draw.rect(screen, (200, 200, 0), (ammo_x, ammo_y, rect_width, rect_height))
+        pg.draw.rect(screen, (200, 200, 0), (ammo_x, ammo_y, yellow_width, rect_height))
 
         # Escreve a quantidade de vida e munição
         font = pg.font.SysFont(None, 30)
