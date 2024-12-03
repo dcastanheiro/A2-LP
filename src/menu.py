@@ -19,6 +19,7 @@ RED = (255, 0, 0)
 base_dir = os.path.dirname(os.path.abspath(__file__))
 font_path = os.path.join(base_dir, "..", "assets", "fonts", "PressStart2P-Regular.ttf")
 background_path = os.path.join(base_dir, "..", "assets", "Assets_area_1", "Background", "subway_BG.png")
+tutorial_path = os.path.join(base_dir, "..", "assets", "tutorial", "tutorial.png")
 
 #carregar a fonte de texto escolhida
 if os.path.exists(font_path):
@@ -35,6 +36,13 @@ if os.path.exists(background_path):
 else:
     background_image = None
 
+#carregar a imagem do tutorial
+if os.path.exists(tutorial_path):
+    tutorial_image = pg.image.load(tutorial_path)
+    tutorial_image = pg.transform.scale(tutorial_image, (screen_width, screen_height))
+else:
+    tutorial_image = None
+
 #menu principal
 class MainMenu:
     def __init__(self, game_manager):
@@ -50,12 +58,15 @@ class MainMenu:
 
         #botões do menu
         play_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
+        tutorial_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 + 20, 200, 50)
         exit_button = pg.Rect(20, 20, 100, 40)
 
         pg.draw.rect(screen, WHITE, play_button, 2)
+        pg.draw.rect(screen, WHITE, tutorial_button, 2)
         pg.draw.rect(screen, RED, exit_button, 2)
 
         self.draw_text("Play", small_font, WHITE, screen_width // 2 - 30, screen_height // 2 - 40)
+        self.draw_text("Tutorial", small_font, WHITE, screen_width // 2 - 50, screen_height // 2 + 30)
         self.draw_text("Exit", small_font, RED, 40, 30)
 
     def on_event(self, event):
@@ -64,9 +75,42 @@ class MainMenu:
 
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 - 50 < mouse_y < screen_height // 2:
                 self.game_manager.change_state("game_level")
+            
+            if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 + 20 < mouse_y < screen_height // 2 + 70:
+                self.game_manager.change_state("tutorial")
 
             if 20 < mouse_x < 120 and 20 < mouse_y < 60:
                 self.game_manager.is_running = False
+
+    def update(self):
+        pass
+
+    def draw_text(self, text, font, color, x, y):
+        text_surface = font.render(text, True, color)
+        screen.blit(text_surface, (x, y))
+
+#dando classe a página do tutorial
+class TutorialScreen:
+    def __init__(self, game_manager):
+        self.game_manager = game_manager
+
+    def draw(self, screen):
+        if tutorial_image:
+            screen.blit(tutorial_image, (0, 0))
+        else:
+            screen.fill(WHITE)
+            self.draw_text("Tutorial image not found!", font, RED, screen_width // 2 - 200, screen_height // 2 - 20)
+
+        back_button = pg.Rect(screen_width - 120, 20, 100, 40)
+        pg.draw.rect(screen, RED, back_button, 2)
+        self.draw_text("Back", small_font, RED, screen_width - 90, 30)
+
+    def on_event(self, event):
+        if event.type == pg.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pg.mouse.get_pos()
+
+            if screen_width - 120 < mouse_x < screen_width - 20 and 20 < mouse_y < 60:
+                self.game_manager.change_state("main_menu")
 
     def update(self):
         pass
@@ -165,6 +209,7 @@ class GameManager:
     def __init__(self):
         self.screen_map = {
             "main_menu": MainMenu(self),
+            "tutorial": TutorialScreen(self),
             "game_level": GameLevel(self),
             "choose_difficulty": ChooseDifficulty(self)
         }
