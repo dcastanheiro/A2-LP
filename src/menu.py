@@ -59,15 +59,15 @@ class MainMenu:
         #botões do menu
         play_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
         tutorial_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 + 20, 200, 50)
-        exit_button = pg.Rect(20, 20, 100, 40)
+        exit_button = pg.Rect(20, 20, 100, 40) #copiar
 
         pg.draw.rect(screen, WHITE, play_button, 2)
         pg.draw.rect(screen, WHITE, tutorial_button, 2)
-        pg.draw.rect(screen, RED, exit_button, 2)
+        pg.draw.rect(screen, RED, exit_button, 2) #copiar
 
         self.draw_text("Play", small_font, WHITE, screen_width // 2 - 30, screen_height // 2 - 40)
         self.draw_text("Tutorial", small_font, WHITE, screen_width // 2 - 50, screen_height // 2 + 30)
-        self.draw_text("Exit", small_font, RED, 40, 30)
+        self.draw_text("Exit", small_font, RED, 40, 30) #copiar
 
     def on_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -101,15 +101,15 @@ class TutorialScreen:
             screen.fill(WHITE)
             self.draw_text("Tutorial image not found!", font, RED, screen_width // 2 - 200, screen_height // 2 - 20)
 
-        back_button = pg.Rect(screen_width - 120, 20, 100, 40)
-        pg.draw.rect(screen, RED, back_button, 2)
-        self.draw_text("Back", small_font, RED, screen_width - 90, 30)
+        exit_button = pg.Rect(20, 20, 100, 40)
+        pg.draw.rect(screen, RED, exit_button, 2)
+        self.draw_text("Exit", small_font, RED, 40, 30)
 
     def on_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pg.mouse.get_pos()
 
-            if screen_width - 120 < mouse_x < screen_width - 20 and 20 < mouse_y < 60:
+            if 20 < mouse_x < 120 and 20 < mouse_y < 60:
                 self.game_manager.change_state("main_menu")
 
     def update(self):
