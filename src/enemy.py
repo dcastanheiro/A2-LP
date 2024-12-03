@@ -295,6 +295,5 @@ class ArEnemy(Enemy):
         screen: pg.Surface
             Superficie onde o inimigo será desenhado.
         """
-        # TODO: consertar sobreposicao de flip do inimigo
         screen.blit(pg.transform.flip(self.image, self.flip, False), self.rect)
         
