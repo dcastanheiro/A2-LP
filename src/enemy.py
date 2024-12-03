@@ -13,7 +13,7 @@ class Enemy(Entity):
     Existem dois tipos de inimigos nessa classe: Bazuca e Sniper.
     """
 
-    def __init__(self, images_folders: dict, x: int, y: int, health: int, bullet_group: pg.sprite.Group, bullet_type: str, shoot_interval: float):
+    def __init__(self, images_folders: dict, x: int, y: int, life: int, bullet_group: pg.sprite.Group, bullet_type: str, shoot_interval: float):
         """
         Parameters
         ----------
@@ -23,7 +23,7 @@ class Enemy(Entity):
             Posição inicial no eixo x.
         y: int
             Posição inicial no eixo y.
-        health: int
+        life: int
             Vida do inimigo.
         bullet_group: pg.sprite.Group
             Grupo para gerenciar as balas disparadas.
@@ -33,11 +33,12 @@ class Enemy(Entity):
             Tempo de espera entre tiros consecutivos.
         """
         super().__init__(images_folders, x, y)
-        self.health = health
+        self.life = life
         self.bullet_group = bullet_group
         self.bullet_type = bullet_type
         self.shoot_interval = shoot_interval
         self.direction = 1
+        self.is_dead = False
         self.last_shot_time = time.time()
 
     def set_state(self, new_state: str):
@@ -108,6 +109,9 @@ class Enemy(Entity):
         max_distance_horizontal = 400
         max_distance_vertical = 10
 
+        if self.is_dead:
+            return
+
         # verifica alcance horizontal e vertical
         in_horizontal_range = abs(player_x - self.rect.centerx) <= max_distance_horizontal
         in_vertical_range = abs(player_y - self.rect.centery) <= max_distance_vertical
@@ -150,6 +154,13 @@ class Enemy(Entity):
                 return False
 
         return True
+    
+    def die(self):
+        """
+        Troca o estado para 'death' e gerencia a animação de morte.
+        """
+        self.set_state("die")  # troca o estado para 'die'
+        self.is_dead = True  
 
     def take_damage(self, amount: int):
         """
@@ -160,9 +171,12 @@ class Enemy(Entity):
         amount: int
             Quantidade de dano recebido
         """
-        self.health -= amount
-        if self.health <= 0:
-            self.kill()  
+        if self.is_dead:
+            return
+
+        self.life -= amount
+        if self.life <= 0:
+            self.die()  
 
     def update(self, player_x: int, player_y: int, platforms: pg.sprite.Group):
         """
@@ -178,6 +192,18 @@ class Enemy(Entity):
             Grupo de obstaculos do jogo
             
         """
+        if self.state == "die":
+            # quando a animação de morte terminar, remova o inimigo
+            self.current_time += 0.1
+            if self.current_time >= 1:
+                self.index = (self.index + 1) % len(self.images[self.state])
+                self.image = self.images[self.state][self.index]
+                self.current_time = 0
+
+                if self.index == len(self.images[self.state]) - 1:
+                    self.kill()
+            return
+    
         if self._can_see_player(player_x, player_y, platforms):
             self.shoot(player_x, player_y, platforms)
 
@@ -207,7 +233,7 @@ class ArEnemy(Enemy):
     Classe responsavel pelo inimigo "Ar" que patrulha horizontalmente.
     Implementado fora da classe principal pois possui logicas diferentes.
     """
-    def __init__(self, images_folders: dict, x: int, y: int, health: int, bullet_group: pg.sprite.Group, bullet_type: str, shoot_interval: float, patrol_speed: float):
+    def __init__(self, images_folders: dict, x: int, y: int, life: int, bullet_group: pg.sprite.Group, bullet_type: str, shoot_interval: float, patrol_speed: float):
         """
         Parameters
         ----------
@@ -217,7 +243,7 @@ class ArEnemy(Enemy):
             Posição inicial no eixo x.
         y: int
             Posição inicial no eixo y.
-        health: int
+        life: int
             Vida do inimigo.
         bullet_group: pg.sprite.Group
             Grupo para gerenciar as balas disparadas.
@@ -228,7 +254,7 @@ class ArEnemy(Enemy):
         patrol_speed: float
             Velocidade de patrulha horizontal.
         """
-        super().__init__(images_folders, x, y, health, bullet_group, bullet_type, shoot_interval)
+        super().__init__(images_folders, x, y, life, bullet_group, bullet_type, shoot_interval)
         self.patrol_speed = patrol_speed
         self.patrolling = True  
         self.flip = False
@@ -242,8 +268,11 @@ class ArEnemy(Enemy):
         platforms : pg.sprite.Group
             Grupo de plataformas para verificar colisoes
         """
+        if self.is_dead:
+            return
+
         if self.patrolling:
-            # movimentaa horizontalmente
+            # movimenta horizontalmente
             self.rect.x += int(self.patrol_speed * self.direction)
 
             if self.state != "walk":
@@ -271,6 +300,19 @@ class ArEnemy(Enemy):
         platforms: pg.sprite.Group
             Grupo de plataformas do jogo
         """
+
+        if self.state == "die":
+            # quando a animação de morte terminar, remova o inimigo
+            self.current_time += 0.1
+            if self.current_time >= 1:
+                self.index = (self.index + 1) % len(self.images[self.state])
+                self.image = self.images[self.state][self.index]
+                self.current_time = 0
+
+                if self.index == len(self.images[self.state]) - 1:
+                    self.kill()
+            return
+        
         if self._can_see_player(player_x, player_y, platforms):
             # para de andar e atira
             self.patrolling = False

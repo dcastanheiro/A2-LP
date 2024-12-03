@@ -27,6 +27,27 @@ player_all_images_folders = {
 
 }
 
+bazooka_enemy_images_folders = {
+    "idle": "../assets/Enemies/bazooka/idle",
+    "shoot": "../assets/Enemies/bazooka/shoot",
+    "die": "../assets/Enemies/bazooka/die"
+}
+
+sniper_enemy_images_folders = {
+    "idle": "../assets/Enemies/sniper/idle",
+    "shoot": "../assets/Enemies/sniper/shoot",
+    "die": "../assets/Enemies/sniper/die"
+
+}
+
+ar_enemy_images_folders = {
+    "walk": "../assets/Enemies/ar/walk",
+    "shoot": "../assets/Enemies/ar/shoot",
+    "idle": "../assets/Enemies/ar/idle",
+    "die": "../assets/Enemies/ar/die"
+    
+}
+
 # mapa: Cada "#" representa um bloco, e "." é um espaço vazio
 map_layout = [
     "................................................................",
@@ -64,7 +85,7 @@ map_layout = [
     ".......##.........##............#.................#............#",
     ".......##.........##...........##.................#.............",
     "1111111##111111111##11111111111##11111111111111111#11111112....#",
-    "############################################################..##"
+    "############################################################ee##"
 ]
 
 # lista com as camadas do background
@@ -79,5 +100,6 @@ map_tiles = {
     "1": "../assets/Assets_area_2/tileset/floor_2.png",
     "2": "../assets/Assets_area_2/tileset/floor_3.png",
     "3": "../assets/Assets_area_2/tileset/floor_4.png",
-    "b": "../assets/Assets_area_2/tileset/barrier.png"
+    "b": "../assets/Assets_area_2/tileset/barrier.png",
+    "e": "../assets/Assets_area_2/tileset/exit.png"
 }
