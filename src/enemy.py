@@ -1,10 +1,10 @@
 """Modulo responsavel pela criacao dos inimigos e suas propriedades"""
 
-from player import Entity
 from bullet import Bullet
 import pygame as pg
 import time
 from bullet import BazookaBullet, SniperBullet, ArBullet
+from entity import Entity
 
 
 class Enemy(Entity):
@@ -13,7 +13,7 @@ class Enemy(Entity):
     Existem dois tipos de inimigos nessa classe: Bazuca e Sniper.
     """
 
-    def __init__(self, images_folders: dict, x: int, y: int, life: int, bullet_group: pg.sprite.Group, bullet_type: str, shoot_interval: float):
+    def __init__(self, images_folders: dict, x: int, y: int, life: int, bullet_group: pg.sprite.Group, bullet_type: str, shoot_interval: float, flip: bool = False, damage_multiplier: float = 1.0):
         """
         Parameters
         ----------
@@ -31,6 +31,10 @@ class Enemy(Entity):
             Tipo de bala disparada pelo inimigo ('bazooka' ou 'sniper').
         shoot_interval: float
             Tempo de espera entre tiros consecutivos.
+        flip: bool
+            Se o inimigo vai ser iniciado virado ou nao.
+        damage_multiplier: int
+            Multiplicador de dano das balas conforme a dificuldade
         """
         super().__init__(images_folders, x, y)
         self.life = life
@@ -39,6 +43,8 @@ class Enemy(Entity):
         self.shoot_interval = shoot_interval
         self.direction = 1
         self.is_dead = False
+        self.damage_multiplier = damage_multiplier
+        self.flip = flip
         self.last_shot_time = time.time()
 
     def set_state(self, new_state: str):
@@ -74,6 +80,7 @@ class Enemy(Entity):
             if self._can_see_player(player_x, player_y, platforms):
                 # atirar reto
                 direction = (self.direction, 0)
+
                 # criar a bala
                 if self.bullet_type == "bazooka":
                     bullet = BazookaBullet(self.rect.centerx, self.rect.centery, direction=direction)
@@ -88,9 +95,9 @@ class Enemy(Entity):
                     bullet = None
 
                 if bullet:
+                    bullet.dmg *= self.damage_multiplier
                     self.bullet_group.add(bullet)
                     self.last_shot_time = current_time
-    
                     self.set_state("shoot")
 
     def _can_see_player(self, player_x, player_y, platforms):
@@ -113,6 +120,10 @@ class Enemy(Entity):
 
         if self.is_dead:
             return
+        
+        # caso inimigo esteja virado
+        if self.flip:
+            self.direction = -1
 
         # verifica alcance horizontal e vertical
         in_horizontal_range = abs(player_x - self.rect.centerx) <= max_distance_horizontal
@@ -229,13 +240,13 @@ class Enemy(Entity):
         screen: pg.Surface
             Superficie onde o jogador será desenhado
         """
-        screen.blit(self.image, self.rect)
+        screen.blit(pg.transform.flip(self.image, self.flip, False), self.rect)
 class ArEnemy(Enemy):
     """
     Classe responsavel pelo inimigo "Ar" que patrulha horizontalmente.
     Implementado fora da classe principal pois possui logicas diferentes.
     """
-    def __init__(self, images_folders: dict, x: int, y: int, life: int, bullet_group: pg.sprite.Group, bullet_type: str, shoot_interval: float, patrol_speed: float):
+    def __init__(self, images_folders: dict, x: int, y: int, life: int, bullet_group: pg.sprite.Group, bullet_type: str, shoot_interval: float, patrol_speed: float, damage_multiplier: float = 1.0):
         """
         Parameters
         ----------
@@ -243,7 +254,7 @@ class ArEnemy(Enemy):
             Dicionário com sprites do inimigo.
         x: int
             Posição inicial no eixo x.
-        y: a
+        y: int
             Posição inicial no eixo y.
         life: int
             Vida do inimigo.

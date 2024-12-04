@@ -1,6 +1,9 @@
+"""Modulo responsavel por iniciar o Menu e cuidar da integracao com o jogo"""
+
 import pygame as pg
 import sys
 import os
+from game import Game
 
 pg.init()
 
@@ -198,16 +201,14 @@ class ChooseDifficulty:
             mouse_x, mouse_y = pg.mouse.get_pos()
 
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 - 50 < mouse_y < screen_height // 2:
-                print("Difficulty: Normal")
-                self.game_manager.is_running = False
+                self.game_manager.start_game("normal")
 
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 + 10 < mouse_y < screen_height // 2 + 60:
-                print("Difficulty: Hard")
-                self.game_manager.is_running = False
+                self.game_manager.start_game("hard")
 
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 + 70 < mouse_y < screen_height // 2 + 120:
-                print("Difficulty: Insane")
-                self.game_manager.is_running = False
+                self.game_manager.start_game("insane")
+
             if 20 < mouse_x < 120 and 20 < mouse_y < 60:
                 self.game_manager.change_state("main_menu")
 
@@ -229,10 +230,18 @@ class GameManager:
         }
         self.current_screen = self.screen_map["main_menu"]
         self.is_running = False
+        self.game = None
 
     def change_state(self, screen_name):
         if screen_name in self.screen_map:
             self.current_screen = self.screen_map[screen_name]
+    
+    def start_game(self, difficulty):
+        """
+        Inicia o jogo com a dificuldade selecionada.
+        """
+        self.game = Game(difficulty, self)
+        self.is_running = False  
 
     def run(self):
         self.is_running = True
@@ -247,6 +256,9 @@ class GameManager:
             self.current_screen.draw(screen)
             pg.display.flip()
             clock.tick(30)
+
+        if self.game:
+            self.game.running()
 
         pg.quit()
         sys.exit()
