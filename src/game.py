@@ -47,7 +47,8 @@ class Game:
             life=50,
             bullet_group=self.bazooka_bullets,
             bullet_type="bazooka",
-            shoot_interval=2.0
+            shoot_interval=2,
+            shoot_sound=pg.mixer.Sound("../assets/sounds/laserShoot.wav")
         )
 
         self.sniper_enemy = Enemy(
@@ -57,7 +58,8 @@ class Game:
             life=30,
             bullet_group=self.sniper_bullets,
             bullet_type="sniper",
-            shoot_interval=1.0
+            shoot_interval=1.0,
+            shoot_sound=pg.mixer.Sound("../assets/sounds/laserShoot.wav")
         )
 
         self.ar_enemy = ArEnemy(
@@ -68,7 +70,7 @@ class Game:
             bullet_group=self.ar_bullets,  
             bullet_type="ar",  
             shoot_interval=0.5,  
-            patrol_speed=1.5  
+            patrol_speed=1.5    
         )
 
         self.enemies.add(self.bazooka_enemy, self.sniper_enemy, self.ar_enemy)
@@ -158,6 +160,7 @@ class Game:
         for bullet in self.bullet_enemies_group:
             if bullet.rect.colliderect(self.player.rect):
                 self.player.life -= bullet.dmg
+                self.player.hit_sound.play()
                 bullet.kill()  
 
     def draw_grid(self):

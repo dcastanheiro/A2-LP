@@ -13,7 +13,7 @@ class Enemy(Entity):
     Existem dois tipos de inimigos nessa classe: Bazuca e Sniper.
     """
 
-    def __init__(self, images_folders: dict, x: int, y: int, life: int, bullet_group: pg.sprite.Group, bullet_type: str, shoot_interval: float):
+    def __init__(self, images_folders: dict, x: int, y: int, life: int, bullet_group: pg.sprite.Group, bullet_type: str, shoot_interval: float, shoot_sound: pg.mixer.Sound):
         """
         Parameters
         ----------
@@ -40,6 +40,7 @@ class Enemy(Entity):
         self.direction = 1
         self.is_dead = False
         self.last_shot_time = time.time()
+        self.shoot_sound = shoot_sound
 
     def set_state(self, new_state: str):
         """
@@ -74,7 +75,7 @@ class Enemy(Entity):
             if self._can_see_player(player_x, player_y, platforms):
                 # atirar reto
                 direction = (self.direction, 0)
-
+                self.shoot_sound.play()
                 # criar a bala
                 if self.bullet_type == "bazooka":
                     bullet = BazookaBullet(self.rect.centerx, self.rect.centery, direction=direction)
@@ -241,7 +242,7 @@ class ArEnemy(Enemy):
             Dicionário com sprites do inimigo.
         x: int
             Posição inicial no eixo x.
-        y: int
+        y: a
             Posição inicial no eixo y.
         life: int
             Vida do inimigo.
@@ -254,7 +255,7 @@ class ArEnemy(Enemy):
         patrol_speed: float
             Velocidade de patrulha horizontal.
         """
-        super().__init__(images_folders, x, y, life, bullet_group, bullet_type, shoot_interval)
+        super().__init__(images_folders, x, y, life, bullet_group, bullet_type, shoot_interval, pg.mixer.Sound("../assets/sounds/laserShoot.wav"))
         self.patrol_speed = patrol_speed
         self.patrolling = True  
         self.flip = False

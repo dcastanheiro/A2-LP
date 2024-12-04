@@ -80,6 +80,7 @@ class Player(Entity):
         self.last_reload_time = time.time()
         self.reload_cooldown = 1.5
         self.is_dead = False
+        self.hit_sound = pg.mixer.Sound("../assets/sounds/hitHurt.wav")
      
     
     def movement(self):
@@ -170,7 +171,6 @@ class Player(Entity):
                 self.last_shot_time = current_time 
                 shoot_sound.play()
                 self.ammo -= 1
-
                 
         return self.bullet_group
     
