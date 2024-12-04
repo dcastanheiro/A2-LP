@@ -4,6 +4,7 @@ import pygame as pg
 import os
 from settings import PX_SCALE, TILE_SIZE
 
+
 def load_image(img_path: str):
     """
     Função para carregar e escalar uma imagem.
@@ -43,3 +44,4 @@ def load_tile(img_path: str):
     image = pg.image.load(img_path).convert_alpha()
     tile_image = pg.transform.scale(image, (TILE_SIZE, TILE_SIZE))
     return tile_image
+

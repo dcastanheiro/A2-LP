@@ -7,34 +7,7 @@ from bullet import Bullet
 from map import Platform
 from settings import PX_SCALE, SCREEN_HEIGHT, SCREEN_WIDTH
 from utils import load_image
-
-class Entity(pg.sprite.Sprite):
-    """
-    Classe que representa uma Entidade. Qualquer coisa que se mexe e possui sprites.
-    Parameters
-    ----------
-    images_folders: dict
-        Dicionário de animações onde as chaves são os estados (por exemplo: 'idle', 'run') e os valores são as listas de imagens correspondentes.
-    x:
-        Posição do eixo x inicial da entidade
-    y:
-        Posição do eixo y inicial da entidade
-    """
-    def __init__(self, images_folders: dict, x: int, y: int):
-        super().__init__()
-        self.state = 'idle'
-        self.index = 0
-        # carregar imagens de cada estado        
-        self.images = {}
-
-        for state, folder in images_folders.items():
-            self.images[state] = [
-                load_image(os.path.join(folder, img_name))
-                for img_name in os.listdir(folder) if img_name.endswith(".png")
-            ]
-
-        self.image = self.images[self.state][self.index]
-        self.rect = self.image.get_rect(center=(x, y))
+from entity import Entity
 
 class Player(Entity):
     """
@@ -179,20 +152,20 @@ class Player(Entity):
         Logica de morte do jogador.
         """
         if not self.is_dead:
-            self.set_state("die")  
-            self.is_dead = True
+            self.set_state("die")
+            self.is_dead = True  
 
-        self.current_time += 0.1
-        if self.current_time >= 1:
-            self.index = (self.index + 1) % len(self.images[self.state])
-            self.image = self.images[self.state][self.index]
-            self.current_time = 0
+        if self.is_dead:
+            self.current_time += 0.1
+            if self.current_time >= 1:
+                self.index = (self.index + 1) % len(self.images[self.state])
+                self.image = self.images[self.state][self.index]
+                self.current_time = 0
 
-            if self.index == len(self.images[self.state]) - 1:
-                #TODO: adicionar logica de sair do jogo ou voltar pro menu 
-                print("Game Over!")
-                pg.quit() # TODO: sera trocado depois quando o menu estiver implementado
-                exit()
+                if self.index == len(self.images[self.state]) - 1:
+                    print("Game Over!")
+                    pg.quit()
+                    exit()
         return   
             
     def reload(self):

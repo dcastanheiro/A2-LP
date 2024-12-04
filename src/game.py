@@ -11,9 +11,18 @@ class Game:
     """
     Classe que administra o funcionamento geral do jogo.
     """
-    def __init__(self) -> None:
+    def __init__(self, difficulty: str, game_manager) -> None:
         pg.init()
         pg.mixer.init()
+        self.difficulty = difficulty
+        self.game_manager = game_manager
+
+        # Configura o multiplicador de dano com base na dificuldade
+        self.damage_multiplier = {
+            "normal": 1.0,
+            "hard": 1.5,
+            "insane": 2.0
+        }.get(self.difficulty, 1.0)
 
         # setando a tela
         self.width = SCREEN_WIDTH
@@ -40,14 +49,28 @@ class Game:
         # criar o grupo dos inimigos
         self.enemies = pg.sprite.Group()
 
+        # cria os inimigos 
         self.bazooka_enemy = Enemy(
             bazooka_enemy_images_folders,
             x=320,
             y=210,
-            life=50,
+            life=40,
             bullet_group=self.bazooka_bullets,
             bullet_type="bazooka",
-            shoot_interval=2
+            shoot_interval=2,
+            damage_multiplier=self.damage_multiplier
+        )
+
+        self.bazooka_enemy_2 = Enemy(
+            bazooka_enemy_images_folders,
+            x=750,
+            y=230,
+            life=40,
+            bullet_group=self.bazooka_bullets,
+            bullet_type="bazooka",
+            shoot_interval=2,
+            damage_multiplier=self.damage_multiplier,
+            flip = True
         )
 
         self.sniper_enemy = Enemy(
@@ -57,21 +80,23 @@ class Game:
             life=30,
             bullet_group=self.sniper_bullets,
             bullet_type="sniper",
-            shoot_interval=1.0
+            shoot_interval=1.0,
+            damage_multiplier=self.damage_multiplier
         )
 
         self.ar_enemy = ArEnemy(
             ar_enemy_images_folders,
-            x=600,  
-            y=145,  
+            x=600,
+            y=145,
             life=30,
-            bullet_group=self.ar_bullets,  
-            bullet_type="ar",  
-            shoot_interval=0.5,  
-            patrol_speed=1.5    
+            bullet_group=self.ar_bullets,
+            bullet_type="ar",
+            shoot_interval=0.5,
+            patrol_speed=1.5,
+            damage_multiplier=self.damage_multiplier
         )
 
-        self.enemies.add(self.bazooka_enemy, self.sniper_enemy, self.ar_enemy)
+        self.enemies.add(self.bazooka_enemy, self.ar_enemy, self.sniper_enemy, self.bazooka_enemy_2)
 
         # inicializando grupo de sprites
         self.bullet_group = pg.sprite.Group()
@@ -89,6 +114,9 @@ class Game:
         self.clock = pg.time.Clock()
         self.run = True
         while self.run:
+            if self.game_manager.current_screen == "main_menu":  # Checa o estado do jogo
+                self.run = False
+                break
             self.on_event()
             self.update()
             self.draw()
@@ -108,7 +136,6 @@ class Game:
                 self.player.is_shooting = True
             else:
                  self.player.is_shooting = False   
-            
 
     def update(self):
         """Metodo para atualizar o jogo"""
@@ -126,6 +153,7 @@ class Game:
         self.check_collision()
         self.check_bullets_colission()
         self.check_victory()
+        self.check_dead()
         self.player._on_out_of_bounds()
         pg.display.update()  
         
@@ -181,6 +209,13 @@ class Game:
         self.bullet_enemies_group.draw(self.screen)
         pg.display.flip()
 
+    def check_dead(self):
+        """
+        Verifica se o jogador esta morto e retorna ao menu.
+        """
+        if self.player.is_dead:
+            self.game_manager.change_state("main_menu")
+
     def check_victory(self):
         """
         Metodo responsavel por cuidar da checagem de vitoria do jogador.
@@ -196,6 +231,6 @@ class Game:
 
         if all_enemies_dead and player_collided_with_e:
             print("Parabéns! Voce venceu o jogo!")
-            pg.quit()
-            exit()  
+            self.run = False 
+             
 

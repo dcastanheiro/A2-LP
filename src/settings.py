@@ -103,3 +103,5 @@ map_tiles = {
     "b": "../assets/Assets_area_2/tileset/barrier.png",
     "e": "../assets/Assets_area_2/tileset/exit.png"
 }
+
+
