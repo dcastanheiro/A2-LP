@@ -55,7 +55,6 @@ class MainMenu:
         else:
             screen.fill(WHITE)
 
-        self.draw_text("Run 'n Gun", font, WHITE, screen_width // 2 - 200, 50)
 
         #botões do menu
         play_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
@@ -66,10 +65,15 @@ class MainMenu:
         pg.draw.rect(screen, WHITE, tutorial_button, 2)
         pg.draw.rect(screen, RED, exit_button, 2)
 
-        self.draw_text("Play", small_font, WHITE, screen_width // 2 - 30, screen_height // 2 - 40)
-        self.draw_text("Tutorial", small_font, WHITE, screen_width // 2 - 50, screen_height // 2 + 30)
+        self.draw_text("Run 'n Gun", font, WHITE, screen_width // 2 - 170, 50)
+        self.draw_text("Play", small_font, WHITE, screen_width // 2 - 43, screen_height // 2 - 40)
+        self.draw_text("Tutorial", small_font, WHITE, screen_width // 2 - 80, screen_height // 2 + 30)
         self.draw_text("Exit", small_font, RED, 30, 30)
-
+        self.draw_text("CREDITS:", small_font, WHITE, 10, screen_height - 90)
+        self.draw_text("Bernardo de Vasconcellos", small_font, WHITE, 10, screen_height - 70)
+        self.draw_text("Dilmar Castanheiro", small_font, WHITE, 10, screen_height - 50)
+        self.draw_text("Matheus Constantin", small_font, WHITE, 10, screen_height - 30) 
+        
     def on_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pg.mouse.get_pos()
@@ -133,15 +137,14 @@ class GameLevel:
         else:
             screen.fill(WHITE)
 
-        self.draw_text("Choose the Map", font, WHITE, screen_width // 2 - 150, 50)
-        self.draw_text("Exit", small_font, RED, 30, 30)
-
         map1_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
         exit_button = pg.Rect(20, 20, 100, 40)
 
         pg.draw.rect(screen, WHITE, map1_button, 2)
         pg.draw.rect(screen, RED, exit_button, 2)
 
+        self.draw_text("Choose the Map", font, WHITE, screen_width // 2 - 215, 50)
+        self.draw_text("Exit", small_font, RED, 30, 30)
         self.draw_text("Map 1", small_font, WHITE, screen_width // 2 - 50, screen_height // 2 - 40)
         self.draw_text("Exit", small_font, RED, 30, 30)
 
@@ -174,8 +177,6 @@ class ChooseDifficulty:
         else:
             screen.fill(WHITE)
 
-        self.draw_text("Difficulty Level", font, WHITE, screen_width // 2 - 250, 50)
-
         normal_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
         hard_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 + 10, 200, 50)
         insane_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 + 70, 200, 50)
@@ -186,9 +187,10 @@ class ChooseDifficulty:
         pg.draw.rect(screen, RED, insane_button, 2)
         pg.draw.rect(screen, RED, exit_button, 2)
 
-        self.draw_text("Normal", small_font, GREEN, screen_width // 2 - 50, screen_height // 2 - 40)
-        self.draw_text("Hard", small_font, YELLOW, screen_width // 2 - 30, screen_height // 2 + 20)
-        self.draw_text("Insane", small_font, RED, screen_width // 2 - 50, screen_height // 2 + 80)
+        self.draw_text("Difficulty Level", font, WHITE, screen_width // 2 - 230, 50)
+        self.draw_text("Normal", small_font, GREEN, screen_width // 2 - 60, screen_height // 2 - 40)
+        self.draw_text("Hard", small_font, YELLOW, screen_width // 2 - 40, screen_height // 2 + 20)
+        self.draw_text("Insane", small_font, RED, screen_width // 2 - 65, screen_height // 2 + 80)
         self.draw_text("Exit", small_font, RED, 30, 30)
 
     def on_event(self, event):
