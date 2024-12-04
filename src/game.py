@@ -107,13 +107,14 @@ class Game:
     def on_event(self):
         """Metodo responsavel por controlar os eventos do jogo"""
         events = pg.event.get()
+        keys = pg.key.get_pressed()
         for event in events:
             if event.type == pg.QUIT:
               self.run = False
-            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            elif (event.type == pg.MOUSEBUTTONDOWN and event.button == 1) or keys[pg.K_c]:
                 self.player.shoot_bullets(self.bullet_group)
                 self.player.is_shooting = True
-            elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
+            else:
                  self.player.is_shooting = False   
             
 

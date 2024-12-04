@@ -89,21 +89,21 @@ class Player(Entity):
         self.dx = 0
 
         # agacha
-        if keys[pg.K_s] and not self.is_in_air:
+        if (keys[pg.K_s] or keys[pg.K_DOWN]) and not self.is_in_air:
             self.set_state('crouch')
             self.is_crouched = True
         else:
             self.is_crouched = False
 
         # movimentaçao lateral
-        if keys[pg.K_a] and not self.is_crouched:
+        if (keys[pg.K_a] or keys[pg.K_LEFT]) and not self.is_crouched:
             self.dx -= self.vel_x
             self.direction = (-1,0)
             self.facing = (-1,0)
             self.flip = True
             self.is_moving = True
             self.set_state('run')  
-        elif keys[pg.K_d]  and not self.is_crouched:
+        elif (keys[pg.K_d] or keys[pg.K_RIGHT]) and not self.is_crouched:
             self.dx += self.vel_x
             self.direction = (1,0)
             self.facing = (1,0)
@@ -210,12 +210,12 @@ class Player(Entity):
             self.ammo = 0
             self.last_reload_time = current_time
 
-        # Continuar processo de recarga se já estiver recarregando
+        # Continua o processo de recarga se já estiver recarregando
         if self.is_reloading:
             time_per_bullet = self.reload_cooldown / self.max_ammo
             bullets_reloaded = int((current_time - self.last_reload_time) / time_per_bullet)
             
-            # Garantir que `self.ammo` não ultrapasse `self.max_ammo`
+            # Garantir que self.ammo não ultrapasse self.max_ammo
             self.ammo = min(self.max_ammo, bullets_reloaded)
 
             # Finalizar recarga quando a munição atingir o máximo
