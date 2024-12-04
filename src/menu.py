@@ -68,7 +68,7 @@ class MainMenu:
 
         self.draw_text("Play", small_font, WHITE, screen_width // 2 - 30, screen_height // 2 - 40)
         self.draw_text("Tutorial", small_font, WHITE, screen_width // 2 - 50, screen_height // 2 + 30)
-        self.draw_text("Exit", small_font, RED, 40, 30)
+        self.draw_text("Exit", small_font, RED, 30, 30)
 
     def on_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -105,7 +105,7 @@ class TutorialScreen:
 
         exit_button = pg.Rect(20, 20, 100, 40)
         pg.draw.rect(screen, RED, exit_button, 2)
-        self.draw_text("Exit", small_font, RED, 40, 30)
+        self.draw_text("Exit", small_font, RED, 30, 30)
 
     def on_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -134,7 +134,7 @@ class GameLevel:
             screen.fill(WHITE)
 
         self.draw_text("Choose the Map", font, WHITE, screen_width // 2 - 150, 50)
-        self.draw_text("Exit", small_font, RED, 40, 30)
+        self.draw_text("Exit", small_font, RED, 30, 30)
 
         map1_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
         exit_button = pg.Rect(20, 20, 100, 40)
@@ -143,7 +143,7 @@ class GameLevel:
         pg.draw.rect(screen, RED, exit_button, 2)
 
         self.draw_text("Map 1", small_font, WHITE, screen_width // 2 - 50, screen_height // 2 - 40)
-        self.draw_text("Exit", small_font, RED, 40, 30)
+        self.draw_text("Exit", small_font, RED, 30, 30)
 
     def on_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -189,7 +189,7 @@ class ChooseDifficulty:
         self.draw_text("Normal", small_font, GREEN, screen_width // 2 - 50, screen_height // 2 - 40)
         self.draw_text("Hard", small_font, YELLOW, screen_width // 2 - 30, screen_height // 2 + 20)
         self.draw_text("Insane", small_font, RED, screen_width // 2 - 50, screen_height // 2 + 80)
-        self.draw_text("Exit", small_font, RED, 40, 30)
+        self.draw_text("Exit", small_font, RED, 30, 30)
 
     def on_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
