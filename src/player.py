@@ -66,7 +66,6 @@ class Player(Entity):
         self.animation_speed = 0.1
         self.current_time = 0
         self.is_moving = False
-        self.is_shooting = False
         self.is_crouched = False
         self.is_in_air = False
         self.gravity_up = 0.5  # gravidade na ascendencia do pulo
@@ -80,10 +79,14 @@ class Player(Entity):
         self.is_reloading = False
         self.last_reload_time = time.time()
         self.reload_cooldown = 1.5
+        self.is_dead = False
      
     
     def movement(self):
         """Módulo responsável pela movimentação do jogador"""
+        if self.is_dead:  
+            return
+
         keys = pg.key.get_pressed()
 
         self.dx = 0
@@ -131,36 +134,6 @@ class Player(Entity):
         if not keys[pg.K_SPACE]:
             self.jump_pressed = False
 
-    # def shoot(self):
-    #     """Metodo responsavel pelas movimentacoes e animacoes de tiro do jogador"""
-    #     if not self.is_shooting:
-    #         return
-
-
-    #     keys = pg.key.get_pressed()
-    #     if self.is_moving and self.is_shooting:
-    #         self.set_state('shoot_run')
-    #     if self.is_in_air:
-    #         if keys[pg.K_w]:
-    #             self.set_state('shoot_jump_up')  # tiro enquanto olha para cima no ar
-    #         elif keys[pg.K_s]:
-    #             self.set_state('shoot_jump_down')  # tiro enquanto olha para baixo no ar
-    #         else:
-    #             self.set_state('shoot_jump')  # tiro padrao no ar
-    #     elif self.is_crouched:
-    #         self.set_state('shoot_shift')  # tiro agachado
-    #     elif self.is_moving:
-    #         if keys[pg.K_w]:
-    #             self.set_state('shoot_run_up')  # tiro correndo olhando para cima
-    #         else:
-    #             self.set_state('shoot_run')  # tiro correndo normal
-    #     else:
-    #         if keys[pg.K_w]:  
-    #             self.set_state('shoot_up') # tiro para cima  parado
-    #         else:              
-    #             self.set_state('shoot') # tiro normal parado
-                
-            
     def shoot_bullets(self, bullet_group: pg.sprite.Group):
         """
         Metodo responsavel por lidar com com o tiro de uma bala com um cooldown.
@@ -199,8 +172,30 @@ class Player(Entity):
 
                 
         return self.bullet_group
+    
+    def die(self):
+        """
+        Logica de morte do jogador.
+        """
+        if not self.is_dead:
+            self.set_state("die")  
+            self.is_dead = True
+
+        self.current_time += 0.1
+        if self.current_time >= 1:
+            self.index = (self.index + 1) % len(self.images[self.state])
+            self.image = self.images[self.state][self.index]
+            self.current_time = 0
+
+            if self.index == len(self.images[self.state]) - 1:
+                #TODO: adicionar logica de sair do jogo ou voltar pro menu 
+                print("Game Over!")
+                pg.quit() # TODO: sera trocado depois quando o menu estiver implementado
+                exit()
+        return   
             
     def reload(self):
+        """Metodo responsavel por gerenciar a recarga de municao do jogador"""
         current_time = time.time()
         keys = pg.key.get_pressed()
 
@@ -233,6 +228,7 @@ class Player(Entity):
             self.is_in_air = True
 
     def _on_out_of_bounds(self):
+        """Metodo responsavel por impedir do jogador sair dos limites da tela"""
         if self.rect.right > SCREEN_WIDTH:  
             self.rect.right = SCREEN_WIDTH
         if self.rect.left < 0:  
@@ -297,6 +293,10 @@ class Player(Entity):
 
     def update(self):
         """Metodo responsavel por atualizar o estado do jogador."""
+        if self.life <= 0:
+            self.die()
+            return
+        
         self.animate()
         self.reload()
         if self.vel_y < 0:  # ascendente
@@ -309,9 +309,6 @@ class Player(Entity):
         # atualiza o movimento
         self.rect.y += self.vel_y
         self.rect.x += self.dx
-
-        # if self.is_shooting:
-        #     self.shoot()
 
     def draw_hud(self, screen):
         """

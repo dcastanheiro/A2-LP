@@ -52,6 +52,7 @@ class Platform(pg.sprite.Sprite):
                     x = col_index * tile_width
                     y = row_index * tile_height
                     platform = cls(x, y, tile_width, tile_height, img_path[tile])
+                    platform.tile_type = tile
                     platforms.append(platform)
 
         return platforms  

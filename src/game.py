@@ -4,7 +4,7 @@ import pygame as pg
 from player import Player
 from enemy import Enemy, ArEnemy
 from map import Platform, Background
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE, player_all_images_folders, map_layout, background_layers, map_tiles
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE, player_all_images_folders, map_layout, background_layers, map_tiles, bazooka_enemy_images_folders, sniper_enemy_images_folders, ar_enemy_images_folders
 from bullet import Bullet
 
 class Game:
@@ -40,40 +40,30 @@ class Game:
         self.enemies = pg.sprite.Group()
 
         self.bazooka_enemy = Enemy(
-            images_folders={
-                "idle": "../assets/Enemies/bazooka/idle",
-                "shoot": "../assets/Enemies/bazooka/shoot",
-            },
+            bazooka_enemy_images_folders,
             x=320,
             y=210,
-            health=50,
+            life=50,
             bullet_group=self.bazooka_bullets,
             bullet_type="bazooka",
             shoot_interval=2.0
         )
 
         self.sniper_enemy = Enemy(
-            images_folders={
-                "idle": "../assets/Enemies/sniper/idle",
-                "shoot": "../assets/Enemies/sniper/shoot",
-            },
+            sniper_enemy_images_folders,
             x=600,
             y=150,
-            health=30,
+            life=30,
             bullet_group=self.sniper_bullets,
             bullet_type="sniper",
             shoot_interval=1.0
         )
 
         self.ar_enemy = ArEnemy(
-            images_folders={
-                "walk": "../assets/Enemies/ar/walk",
-                "shoot": "../assets/Enemies/ar/shoot",
-                "idle": "../assets/Enemies/ar/idle"
-            },
-            x=600,  # Posição inicial
-            y=145,  # Posição inicial
-            health=20,
+            ar_enemy_images_folders,
+            x=600,  
+            y=145,  
+            life=30,
             bullet_group=self.ar_bullets,  
             bullet_type="ar",  
             shoot_interval=0.5,  
@@ -84,6 +74,7 @@ class Game:
 
         # inicializando grupo de sprites
         self.bullet_group = pg.sprite.Group()
+        self.bullet_enemies_group = pg.sprite.Group()
         self.platform_group = pg.sprite.Group()
 
         for platform in self.platforms:
@@ -123,13 +114,17 @@ class Game:
         self.background.update()
         self.player.update()
         self.bullet_group.update()
+        self.bullet_enemies_group.update()
         for platform in self.platforms:
             platform.update()
 
         for enemy in self.enemies:
             enemy.update(self.player.rect.centerx, self.player.rect.centery, self.platform_group)
-            self.bullet_group.add(enemy.bullet_group)
+            self.bullet_enemies_group.add(enemy.bullet_group)
+
         self.check_collision()
+        self.check_bullets_colission()
+        self.check_victory()
         self.player._on_out_of_bounds()
         pg.display.update()  
         
@@ -141,10 +136,28 @@ class Game:
                 self.player.on_collision(platform)
                 platform.on_collision(self.player)
 
+    def check_bullets_colission(self):
+        """Metodo responsavel por lidar com as colisões entre balas, inimigos e jogador."""
         # colisao das balas com plataformas
         for bullet in self.bullet_group:
             if pg.sprite.spritecollideany(bullet, self.platform_group):
                 bullet.kill()
+        for bullet in self.bullet_enemies_group:
+            if pg.sprite.spritecollideany(bullet, self.platform_group):
+                bullet.kill() 
+        
+        # colisao das balas do jogador com os inimigos
+        for bullet in self.bullet_group:
+            for enemy in self.enemies:
+                if not enemy.is_dead and bullet.rect.colliderect(enemy.rect):
+                    enemy.take_damage(bullet.dmg)
+                    bullet.kill()  
+
+        # colisao das balas dos inimigos com o jogador
+        for bullet in self.bullet_enemies_group:
+            if bullet.rect.colliderect(self.player.rect):
+                self.player.life -= bullet.dmg
+                bullet.kill()  
 
     def draw_grid(self):
         """Metodo para desenhar o grid na tela."""
@@ -163,5 +176,24 @@ class Game:
             enemie.draw(self.screen)
         self.player.draw(self.screen)
         self.bullet_group.draw(self.screen)
+        self.bullet_enemies_group.draw(self.screen)
         pg.display.flip()
+
+    def check_victory(self):
+        """
+        Metodo responsavel por cuidar da checagem de vitoria do jogador.
+        """
+        # verifica se todos os inimigos estão mortos
+        all_enemies_dead = all(enemy.is_dead for enemy in self.enemies)
+
+        # verifica se o jogador colidiu com a letra 'e'
+        player_collided_with_e = any(
+            platform.tile_type == 'e' and self.player.rect.colliderect(platform.rect)
+            for platform in self.platforms
+        )
+
+        if all_enemies_dead and player_collided_with_e:
+            print("Parabéns! Voce venceu o jogo!")
+            pg.quit()
+            exit()  
 
