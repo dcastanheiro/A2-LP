@@ -47,8 +47,7 @@ class Game:
             life=50,
             bullet_group=self.bazooka_bullets,
             bullet_type="bazooka",
-            shoot_interval=2,
-            shoot_sound=pg.mixer.Sound("../assets/sounds/laserShoot.wav")
+            shoot_interval=2
         )
 
         self.sniper_enemy = Enemy(
@@ -58,8 +57,7 @@ class Game:
             life=30,
             bullet_group=self.sniper_bullets,
             bullet_type="sniper",
-            shoot_interval=1.0,
-            shoot_sound=pg.mixer.Sound("../assets/sounds/laserShoot.wav")
+            shoot_interval=1.0
         )
 
         self.ar_enemy = ArEnemy(
