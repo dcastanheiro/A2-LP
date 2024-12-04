@@ -45,6 +45,7 @@ else:
 
 #menu principal
 class MainMenu:
+
     def __init__(self, game_manager):
         self.game_manager = game_manager
 
@@ -91,6 +92,7 @@ class MainMenu:
 
 #dando classe a página do tutorial
 class TutorialScreen:
+
     def __init__(self, game_manager):
         self.game_manager = game_manager
 
@@ -121,6 +123,7 @@ class TutorialScreen:
 
 #dando classe ao níveis do jogo
 class GameLevel:
+
     def __init__(self, game_manager):
         self.game_manager = game_manager
 
@@ -131,15 +134,16 @@ class GameLevel:
             screen.fill(WHITE)
 
         self.draw_text("Choose the Map", font, WHITE, screen_width // 2 - 150, 50)
+        self.draw_text("Exit", small_font, RED, 40, 30)
 
         map1_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
-        back_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 + 20, 200, 50)
+        exit_button = pg.Rect(20, 20, 100, 40)
 
         pg.draw.rect(screen, WHITE, map1_button, 2)
-        pg.draw.rect(screen, RED, back_button, 2)
+        pg.draw.rect(screen, RED, exit_button, 2)
 
         self.draw_text("Map 1", small_font, WHITE, screen_width // 2 - 50, screen_height // 2 - 40)
-        self.draw_text("Back", small_font, RED, screen_width // 2 - 50, screen_height // 2 + 30)
+        self.draw_text("Exit", small_font, RED, 40, 30)
 
     def on_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -148,7 +152,7 @@ class GameLevel:
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 - 50 < mouse_y < screen_height // 2:
                 self.game_manager.change_state("choose_difficulty")
 
-            if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 + 20 < mouse_y < screen_height // 2 + 70:
+            if 20 < mouse_x < 120 and 20 < mouse_y < 60:
                 self.game_manager.change_state("main_menu")
 
     def update(self):
@@ -160,6 +164,7 @@ class GameLevel:
 
 #escolha da dificuldade
 class ChooseDifficulty:
+    
     def __init__(self, game_manager):
         self.game_manager = game_manager
 
@@ -174,14 +179,17 @@ class ChooseDifficulty:
         normal_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 - 50, 200, 50)
         hard_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 + 10, 200, 50)
         insane_button = pg.Rect(screen_width // 2 - 100, screen_height // 2 + 70, 200, 50)
+        exit_button = pg.Rect(20, 20, 100, 40)
 
         pg.draw.rect(screen, GREEN, normal_button, 2)
         pg.draw.rect(screen, YELLOW, hard_button, 2)
         pg.draw.rect(screen, RED, insane_button, 2)
+        pg.draw.rect(screen, RED, exit_button, 2)
 
         self.draw_text("Normal", small_font, GREEN, screen_width // 2 - 50, screen_height // 2 - 40)
         self.draw_text("Hard", small_font, YELLOW, screen_width // 2 - 30, screen_height // 2 + 20)
         self.draw_text("Insane", small_font, RED, screen_width // 2 - 50, screen_height // 2 + 80)
+        self.draw_text("Exit", small_font, RED, 40, 30)
 
     def on_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -190,12 +198,16 @@ class ChooseDifficulty:
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 - 50 < mouse_y < screen_height // 2:
                 print("Difficulty: Normal")
                 self.game_manager.is_running = False
+
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 + 10 < mouse_y < screen_height // 2 + 60:
                 print("Difficulty: Hard")
                 self.game_manager.is_running = False
+
             if screen_width // 2 - 100 < mouse_x < screen_width // 2 + 100 and screen_height // 2 + 70 < mouse_y < screen_height // 2 + 120:
                 print("Difficulty: Insane")
                 self.game_manager.is_running = False
+            if 20 < mouse_x < 120 and 20 < mouse_y < 60:
+                self.game_manager.change_state("main_menu")
 
     def update(self):
         pass
