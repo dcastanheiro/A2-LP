@@ -13,6 +13,7 @@ class Game:
     """
     def __init__(self) -> None:
         pg.init()
+        pg.mixer.init()
 
         # setando a tela
         self.width = SCREEN_WIDTH
@@ -103,7 +104,7 @@ class Game:
             if event.type == pg.QUIT:
               self.run = False
             elif (event.type == pg.MOUSEBUTTONDOWN and event.button == 1) or keys[pg.K_c]:
-                self.player.shoot_bullets(self.bullet_group)
+                self.player.shoot_bullets(self.bullet_group, pg.mixer.Sound("../assets/sounds/laserShoot.wav"))
                 self.player.is_shooting = True
             else:
                  self.player.is_shooting = False   

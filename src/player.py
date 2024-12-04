@@ -134,7 +134,7 @@ class Player(Entity):
         if not keys[pg.K_SPACE]:
             self.jump_pressed = False
 
-    def shoot_bullets(self, bullet_group: pg.sprite.Group):
+    def shoot_bullets(self, bullet_group: pg.sprite.Group, shoot_sound : pg.mixer.Sound):
         """
         Metodo responsavel por lidar com com o tiro de uma bala com um cooldown.
         Parameters
@@ -168,6 +168,7 @@ class Player(Entity):
                                 direction=self.direction, img_path="../assets/Player/player_bullet_3.png", speed=10, dmg=5)
                 self.bullet_group.add(self.bullet_player)  
                 self.last_shot_time = current_time 
+                shoot_sound.play()
                 self.ammo -= 1
 
                 
