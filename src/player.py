@@ -227,6 +227,7 @@ class Player(Entity):
             self.vel_y = -10
             self.jump_count += 1
             self.is_in_air = True
+            pg.mixer.Sound("../assets/sounds/jump.wav").play()
 
     def _on_out_of_bounds(self):
         """Metodo responsavel por impedir do jogador sair dos limites da tela"""
