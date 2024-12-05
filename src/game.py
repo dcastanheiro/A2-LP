@@ -260,10 +260,34 @@ class Game:
             damage_multiplier=self.damage_multiplier
         )
 
+        self.ar_enemy_8 = ArEnemy(
+            ar_enemy_images_folders,
+            x=800,
+            y=505,
+            life=30,
+            bullet_group=self.ar_bullets,
+            bullet_type="ar",
+            shoot_interval=0.5,
+            patrol_speed=1.5,
+            damage_multiplier=self.damage_multiplier
+        )
+
+        self.ar_enemy_9 = ArEnemy(
+            ar_enemy_images_folders,
+            x=500,
+            y=505,
+            life=30,
+            bullet_group=self.ar_bullets,
+            bullet_type="ar",
+            shoot_interval=0.5,
+            patrol_speed=1.5,
+            damage_multiplier=self.damage_multiplier
+        )
+
 
 
         self.enemies.add(self.bazooka_enemy, self.bazooka_enemy_2, self.bazooka_enemy_3, self.bazooka_enemy_4, self.bazooka_enemy_5,
-                         self.ar_enemy_1, self.ar_enemy_2, self.ar_enemy_3, self.ar_enemy_4, self.ar_enemy_5, self.ar_enemy_6, self.ar_enemy_7,
+                         self.ar_enemy_1, self.ar_enemy_2, self.ar_enemy_3, self.ar_enemy_4, self.ar_enemy_5, self.ar_enemy_6, self.ar_enemy_7, self.ar_enemy_8, self.ar_enemy_9,
                          self.sniper_enemy_1, self.sniper_enemy_2, self.sniper_enemy_3, self.sniper_enemy_4, self.sniper_enemy_5, self.sniper_enemy_6)
 
         # inicializando grupo de sprites
@@ -367,7 +391,7 @@ class Game:
     def draw(self):
         """Metodo responsavel por desenhar os objetos na tela"""
         self.background.draw(self.screen)
-        self.draw_grid()
+        #self.draw_grid()
         for platform in self.platforms:
             platform.draw(self.screen)
         for enemie in self.enemies:
