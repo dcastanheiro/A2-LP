@@ -1,43 +1,59 @@
 import unittest
-import sys
-import os
-import pygame as pg  # Importando o Pygame corretamente
-from unittest.mock import patch
-
-# Adiciona o diretório 'src' ao caminho de importação
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
-
-from enemy import Enemy  # Agora a importação deve funcionar corretamente
+import pygame as pg
+from enemy import Enemy, ArEnemy
+from bullet import Bullet
 
 class TestEnemy(unittest.TestCase):
+    
+    def setUp(self):
+        pg.init()
+        pg.display.set_mode((1, 1))
+        images_folders = {
+            "idle": "assets/Enemies/sniper/idle",
+            "shoot": "assets/Enemies/sniper/shoot",
+            "die": "assets/Enemies/sniper/die"
+        }
+        self.bullet_group = pg.sprite.Group()
+        self.platform_group = pg.sprite.Group()
+        self.enemy = Enemy(images_folders, x=300, y=100, life=50, bullet_group=self.bullet_group, bullet_type="sniper", shoot_interval=1)
 
-    @patch('src.utils.load_image')  # Usando o patch corretamente com o caminho atualizado
-    @patch('pygame.image.load')  # Simulando a função pygame.image.load
-    @patch('os.listdir')  # Usando o patch para simular o retorno de os.listdir
-    def test_enemy_init(self, mock_listdir, mock_pygame_load, mock_load_image):
-        
-        # Mock para o retorno da função os.listdir
-        mock_listdir.return_value = ['image1.png', 'image2.png']  # Mock de imagens na pasta
+    def test_initial_state(self):
+        """Testa se o estado do inimigo é coerente"""
+        self.assertEqual(self.enemy.life, 50)
+        self.assertFalse(self.enemy.is_dead)
 
-        # Mock para a função load_image, retornando uma superfície do Pygame
-        mock_pygame_load.return_value = pg.Surface((50, 50))  # Superfície de 50x50 pixels, simulando uma imagem
+    def test_take_damage(self):
+        """Testa se o inimigo recebe dano"""
+        self.enemy.take_damage(30)
+        self.assertEqual(self.enemy.life, 20)
+        self.enemy.take_damage(50)
+        self.assertEqual(self.enemy.life, -30)
+        self.assertTrue(self.enemy.is_dead)
 
-        # Criando a instância de Enemy com todos os parâmetros necessários
-        enemy = Enemy(
-            {'idle': 'path_to_idle_folder'},  # imagens
-            100,  # posição x
-            100,  # posição y
-            life=3,  # quantidade de vida
-            bullet_group=None,  # mock do grupo de balas
-            bullet_type=None,  # mock do tipo de bala
-            shoot_interval=1.0  # intervalo de tempo para atirar
-        )
+    def test_shoot(self):
+        """Testa se o inimigo atira corretamente"""
+        self.enemy.shoot(400, 100, self.platform_group)
+        self.assertTrue(Bullet)
 
-        # Verificando se o Enemy foi inicializado corretamente
-        self.assertEqual(enemy.state, 'idle')  # O estado inicial deve ser 'idle'
-        self.assertTrue(hasattr(enemy, 'image'))  # Verifica se existe o atributo 'image'
-        self.assertTrue(hasattr(enemy, 'rect'))  # Verifica se existe o atributo 'rect'
-        self.assertEqual(len(enemy.images['idle']), 2)  # Espera-se que haja 2 imagens no estado 'idle'
+class TestArEnemy(unittest.TestCase):
+
+    def setUp(self):
+        pg.init()
+        pg.display.set_mode((1, 1))
+        images_folders = {
+            "walk": "assets/Enemies/ar/walk",
+            "shoot": "assets/Enemies/ar/shoot",
+            "idle": "assets/Enemies/ar/idle",
+            "die": "assets/Enemies/ar/die"
+        }
+        self.bullet_group = pg.sprite.Group()
+        self.ar_enemy = ArEnemy(images_folders, x=500, y=150, life=40, bullet_group=self.bullet_group, bullet_type="ar", shoot_interval=0.5, patrol_speed=2)
+
+    def test_patrol(self):
+        """Testa se o inimigo "ar" consegue patrulhar corretamente"""
+        initial_x = self.ar_enemy.rect.x
+        self.ar_enemy.patrol(pg.sprite.Group())  # No obstacles
+        self.assertNotEqual(self.ar_enemy.rect.x, initial_x)
 
 if __name__ == '__main__':
     unittest.main()
