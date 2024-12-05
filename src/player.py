@@ -312,7 +312,7 @@ class Player(Entity):
 
         # Escreve a quantidade de vida e munição
         font = pg.font.SysFont(None, 30)
-        health_text = font.render(f"{self.life}/{self.max_life}", True, (255, 255, 255))
+        health_text = font.render(f"{int(self.life)}/{self.max_life}", True, (255, 255, 255))
         health_text_rect = health_text.get_rect(center=(health_x + rect_width / 2, health_y + rect_height / 2 + 1))
         screen.blit(health_text, health_text_rect)
         ammo_text = font.render(f"{self.ammo}/{self.max_ammo}", True, (255, 255, 255))
