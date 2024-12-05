@@ -73,7 +73,42 @@ class Game:
             flip = True
         )
 
-        self.sniper_enemy = Enemy(
+        self.bazooka_enemy_3 = Enemy(
+            bazooka_enemy_images_folders,
+            x=1260,
+            y=150,
+            life=40,
+            bullet_group=self.bazooka_bullets,
+            bullet_type="bazooka",
+            shoot_interval=2,
+            damage_multiplier=self.damage_multiplier,
+            flip = True
+        )
+
+        self.sniper_enemy_1 = Enemy(
+            sniper_enemy_images_folders,
+            x=890,
+            y=90,
+            life=30,
+            bullet_group=self.sniper_bullets,
+            bullet_type="sniper",
+            shoot_interval=1.0,
+            damage_multiplier=self.damage_multiplier, 
+            flip = True
+        )
+
+        self.sniper_enemy_2 = Enemy(
+            sniper_enemy_images_folders,
+            x=20,
+            y=270,
+            life=30,
+            bullet_group=self.sniper_bullets,
+            bullet_type="sniper",
+            shoot_interval=1.0,
+            damage_multiplier=self.damage_multiplier
+        )
+
+        self.sniper_enemy_3 = Enemy(
             sniper_enemy_images_folders,
             x=600,
             y=150,
@@ -84,7 +119,7 @@ class Game:
             damage_multiplier=self.damage_multiplier
         )
 
-        self.ar_enemy = ArEnemy(
+        self.ar_enemy_1 = ArEnemy(
             ar_enemy_images_folders,
             x=600,
             y=145,
@@ -95,8 +130,22 @@ class Game:
             patrol_speed=1.5,
             damage_multiplier=self.damage_multiplier
         )
+        
+        self.ar_enemy_2 = ArEnemy(
+            ar_enemy_images_folders,
+            x=890,
+            y=305,
+            life=30,
+            bullet_group=self.ar_bullets,
+            bullet_type="ar",
+            shoot_interval=0.5,
+            patrol_speed=1.5,
+            damage_multiplier=self.damage_multiplier
+        )
 
-        self.enemies.add(self.bazooka_enemy, self.ar_enemy, self.sniper_enemy, self.bazooka_enemy_2)
+        self.enemies.add(self.bazooka_enemy, self.bazooka_enemy_2, self.bazooka_enemy_3,
+                         self.ar_enemy_1, self.ar_enemy_2,
+                         self.sniper_enemy_1, self.sniper_enemy_2, self.sniper_enemy_3,)
 
         # inicializando grupo de sprites
         self.bullet_group = pg.sprite.Group()
