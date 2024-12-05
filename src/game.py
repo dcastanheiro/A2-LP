@@ -6,7 +6,7 @@ from enemy import Enemy, ArEnemy
 from map import Platform, Background
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE, player_all_images_folders, map_layout, background_layers, map_tiles, bazooka_enemy_images_folders, sniper_enemy_images_folders, ar_enemy_images_folders
 from bullet import Bullet
-
+warnings.filterwarnings("ignore", category=UserWarning, module="PIL.PngImagePlugin")
 class Game:
     """
     Classe que administra o funcionamento geral do jogo.

@@ -285,7 +285,7 @@ class Player(Entity):
         self.rect.y += self.vel_y
         self.rect.x += self.dx
 
-    def draw_hud(self, screen):
+    def _draw_hud(self, screen):
         """
         Módulo responsável por desenhar a HUD, que contém vida e munição
         Parameters
@@ -330,7 +330,7 @@ class Player(Entity):
         screen.blit(pg.transform.flip(self.image, self.flip, False), self.rect)
         self.update()
         self.movement()
-        self.draw_hud(screen)
+        self._draw_hud(screen)
 
 
 
