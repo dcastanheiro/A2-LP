@@ -48,11 +48,15 @@ else:
 
 #menu principal
 class MainMenu:
+    """
+    Classe responsavel por fazer o design do menu principal
+    """
 
     def __init__(self, game_manager):
         self.game_manager = game_manager
 
     def draw(self, screen):
+        """Metodo responsavel por desenhar o background do menu"""
         if background_image:
             screen.blit(background_image, (0, 0))
         else:
@@ -94,16 +98,21 @@ class MainMenu:
         pass
 
     def draw_text(self, text, font, color, x, y):
+        """Metodo responsavel por desenhar o texto do menu"""
         text_surface = font.render(text, True, color)
         screen.blit(text_surface, (x, y))
 
 #dando classe a página do tutorial
 class TutorialScreen:
+    """
+    Classe responsavel por criar os butoes e imagens do tutorial
+    """
 
     def __init__(self, game_manager):
         self.game_manager = game_manager
 
     def draw(self, screen):
+        """Metodo responsavel por desenhar a imagem do tutorial"""
         if tutorial_image:
             screen.blit(tutorial_image, (0, 0))
         else:
@@ -125,16 +134,20 @@ class TutorialScreen:
         pass
 
     def draw_text(self, text, font, color, x, y):
+        """Metodo responsavel por desenhar o texto do tutorial"""
         text_surface = font.render(text, True, color)
         screen.blit(text_surface, (x, y))
 
-#dando classe ao níveis do jogo
 class GameLevel:
+    """
+    Classe responsavel por lidar com os estados do menu
+    """
 
     def __init__(self, game_manager):
         self.game_manager = game_manager
 
     def draw(self, screen):
+        """Metodo responsavel por desenhar a tela de escolha do mapa"""
         if background_image:
             screen.blit(background_image, (0, 0))
         else:
@@ -170,11 +183,17 @@ class GameLevel:
 
 #escolha da dificuldade
 class ChooseDifficulty:
+    """
+    Classe responsavel por criar o design dos botoes de dificuldade e interacoes
+    """
     
     def __init__(self, game_manager):
         self.game_manager = game_manager
 
     def draw(self, screen):
+        """
+        Metodo responsavel por desenhar os botoes de dificuldade
+        """
         if background_image:
             screen.blit(background_image, (0, 0))
         else:
@@ -216,11 +235,15 @@ class ChooseDifficulty:
         pass
 
     def draw_text(self, text, font, color, x, y):
+        """Metodo responsavel por desenhar o texto da escolha de dificuldade"""
         text_surface = font.render(text, True, color)
         screen.blit(text_surface, (x, y))
 
-#gerenciador de jogo
+#gerenciador de jogo""
 class GameManager:
+    """
+    Classe responsável por fazer integracao do menu com o jogo e inicializar o menu
+    """
     def __init__(self):
         self.screen_map = {
             "main_menu": MainMenu(self),
@@ -233,6 +256,9 @@ class GameManager:
         self.game = None
 
     def change_state(self, screen_name):
+        """
+        Metodo responsavel por lidar com o estado do jogo e do menu
+        """
         if screen_name in self.screen_map:
             self.current_screen = self.screen_map[screen_name]
     
