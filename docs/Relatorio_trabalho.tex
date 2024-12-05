@@ -1,0 +1,96 @@
+\documentclass[a4paper]{article}
+\usepackage[top=30pt,bottom=30pt,left=48pt,right=46pt]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[utf8]{inputenc} % Suporte a caracteres UTF-8
+\usepackage[T1]{fontenc}    % Suporte a acentuação
+\usepackage[portuguese]{babel} % Língua portuguesa
+\usepackage{listings}       % Para formatação de código
+\usepackage{xcolor}         % Para cores no código
+\usepackage{a4wide}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\lstdefinestyle{python}{
+    language=Python,
+    showstringspaces=false,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{orange},
+    commentstyle=\color{green!50!black},
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=10pt,
+    frame=single,
+    breaklines=true,
+    captionpos=b,
+    tabsize=4
+}
+
+\title{Relatório do trabalho de Linguagem de Programação}
+\author{Dilmar Aparecido Castanheiro \\
+Bernardo Quintella \\ Matheus Constantin
+}
+\date{December 2024}
+
+\begin{document}
+
+\maketitle
+
+\section{Introdução}
+
+O nosso projeto é um jogo do estilo Run’n Gun, inspirado em clássicos como \textit{Contra} e \textit{Metal Slug}, onde o personagem pode andar, pular, atirar para os lados, recarregar, morrer caso a vida acabe, e o seu objetivo é "derrotar todos os inimigos, ultrapassar os desafios da fase e alcançar o final". Ao atingir o bloco verde, o jogador deve pressionar para baixo, "encerrando a partida com sucesso".
+
+\section{Design}
+
+Nosso jogo possui uma única fase, onde existem 3 tipos de inimigos. O nível é composto por "cinco andares conectados por plataformas, criando desafios verticais e horizontais". O personagem deve descer os andares enfrentando obstáculos e inimigos.
+
+Os inimigos são:
+\begin{itemize}
+    \item AR: Portam um fuzil, "realizam patrulhas simples" e atiram quando veem o player.
+    \item Sniper: Portam uma sniper, "são estrategicamente posicionados" e atiram quando veem o player.
+    \item Bazooka: Portam uma bazooka, "representam grande ameaça com explosões" e atiram quando veem o player.
+\end{itemize}
+
+\section{Gameplay e Mecânicas}
+
+O personagem possui movimentos básicos como andar, pular e atirar, além de mecânicas mais avançadas, como "recarregar a arma e utilizar estratégias para desviar de tiros inimigos". Os inimigos apresentam comportamentos distintos, "oferecendo variedade e aumentando a complexidade conforme o jogador avança". A fase é estruturada de forma linear, incentivando o jogador a descer andares e enfrentar inimigos.
+
+\section{Aspectos Visuais e Sonoros}
+
+Os gráficos do jogo seguem uma estética pixelada, devido aos sprites utilizados, "inspirando-se em jogos clássicos e criando um apelo nostálgico". Em relação ao som, há "efeitos sonoros dinâmicos que acompanham as ações, como tiros, pulos e impactos", aprimorando a imersão.
+
+\section{Divisão de Tarefas}
+
+Dividimos o desenvolvimento do jogo da seguinte forma: Matheus ficou responsável pelo menu e design, Dilmar fez o relatório, e cuidou do mapa e jogabilidade, Bernardo fez os testes, colisões e inimigos e todos participaram colaborativamente na implementação do código principal.
+
+\section{Organização do Código}
+
+O código está dividido em 10 arquivos principais dentro da pasta \textit{src}, conforme detalhado a seguir:
+
+\begin{itemize}
+    \item \textbf{entity.py}: contém a classe responsável pelas entidades do jogo (jogador, inimigos, bala).
+    \item \textbf{player.py}: contém a classe responsável pelo jogador, com métodos para "executar ações como atirar, pular e recarregar".
+    \item \textbf{enemy.py}: contém as classes responsáveis pelos inimigos, como o sniper, bazooka e AR.
+    \item \textbf{bullet.py}: contém a classe responsável pela bala, que "gera dano ao colidir com alvos ou desaparece ao sair do cenário".
+    \item \textbf{map.py}: contém o código responsável pelo mapa.
+    \item \textbf{menu.py}: contém a classe responsável pelo menu.
+    \item \textbf{settings.py}: contém as configurações principais, como "valores padrão para vida, munição e comportamento dos inimigos".
+    \item \textbf{game.py}: cria o jogo a partir das classes contidas nos outros arquivos.
+    \item \textbf{main.py}: executa o jogo.
+    \item \textbf{util.py}: carrega algumas funções úteis.
+\end{itemize}
+
+\section{Testes e Melhorias}
+
+Realizamos testes de jogabilidade para garantir que o jogo estivesse balanceado, identificando ajustes necessários em dificuldade, IA dos inimigos e responsividade dos controles. Além disso, recebemos feedback de "usuários externos que testaram o jogo", o que nos ajudou a refinar a experiência final.
+
+\section{Desafios Enfrentados}
+
+Durante o desenvolvimento, enfrentamos desafios como "implementar comportamentos inteligentes para os inimigos" e "resolver problemas de colisão das balas com precisão", mas conseguimos ultrapassar essas dificuldades.
+
+\end{document}

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Jogo Run n' Gun
 Este foi um projeto desenvolvido como uma avaliação para a disciplina de Linguagens de Programação da graduação de Matemática Aplicada na FGV (Fundação Getúlio Vargas). Nesse projeto desenvolvemos um jogo no estilo Run n' Gun de plataforma baseado em jogos como "Contra". O objetivo do jogo é matar todos os inimigos e chegar à região verde ao fim do mapa.
 
@@ -33,3 +34,7 @@ SPACEBAR + S: olha para baixo
     ```
     python3 -m unittest
     ```
+=======
+# A2-LP
+Instruções: execute o aquivo main.py na pasta src.
+>>>>>>> 6695e0860eb06ebabeac8f79bf2963df894e3a04
